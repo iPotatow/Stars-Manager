@@ -1,0 +1,6 @@
+# Copy this file to .dev.vars for local Workers development.
+# Never commit .dev.vars.
+ADMIN_USER=
+ADMIN_PASSWORD=
+ADMIN_SESSION_SECRET=
+ENCRYPTION_KEY=

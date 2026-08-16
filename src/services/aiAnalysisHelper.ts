@@ -1,0 +1,87 @@
+import { Repository, AIConfig, Category, DiscoveryRepo } from '../types';
+import { AIService } from './aiService';
+import { backend } from './backendAdapter';
+import { resolveCategoryAssignment, buildCategoryHints } from '../utils/categoryUtils';
+import { defaultCategories, translateCategoryName } from '../constants/repositoryCategories';
+
+export interface AIAnalysisResult {
+  summary: string;
+  tags: string[];
+  platforms: string[];
+  custom_category?: string;
+  category_locked?: boolean;
+  analyzed_at: string;
+  analysis_failed: boolean;
+  analysis_error?: string;
+}
+
+export interface AnalyzeRepositoryOptions {
+  repository: Repository | DiscoveryRepo;
+  aiConfig: AIConfig;
+  language: string;
+  categories: Category[];
+  onProgress?: (status: string) => void;
+  signal?: AbortSignal;
+}
+
+export const analyzeRepository = async (options: AnalyzeRepositoryOptions): Promise<AIAnalysisResult> => {
+  const { repository, aiConfig, language, categories, onProgress, signal } = options;
+
+  onProgress?.('Initializing...');
+  
+  const aiService = new AIService(aiConfig, language);
+
+  const [owner, name] = repository.full_name.split('/');
+  
+  onProgress?.('Fetching README...');
+  let readmeContent = '';
+  try {
+    readmeContent = await backend.getRepositoryReadme(owner, name, signal);
+  } catch (error) {
+    if (signal?.aborted || (error as { name?: string })?.name === 'AbortError') {
+      throw error;
+    }
+    console.warn(`Failed to fetch README for ${repository.full_name}, continuing with metadata only:`, error);
+  }
+
+  const categoryNames = categories
+    .filter(cat => cat.id !== 'all')
+    .map(cat => cat.name);
+
+  onProgress?.('Analyzing with AI...');
+  const categoryHints = buildCategoryHints(categories);
+  const analysis = await aiService.analyzeRepository(repository, readmeContent, categoryNames, categoryHints, signal);
+
+  const resolvedCategory = resolveCategoryAssignment({ ...repository, ai_summary: analysis.summary } as Repository, analysis.tags, categories);
+
+  const wasCategoryLocked = !!(repository as Repository).category_locked;
+
+  return {
+    summary: analysis.summary,
+    tags: analysis.tags,
+    platforms: analysis.platforms,
+    custom_category: resolvedCategory,
+    category_locked: wasCategoryLocked,
+    analyzed_at: new Date().toISOString(),
+    analysis_failed: false,
+  };
+};
+
+export const createFailedAnalysisResult = (error?: string): AIAnalysisResult => ({
+  summary: '',
+  tags: [],
+  platforms: [],
+  analyzed_at: new Date().toISOString(),
+  analysis_failed: true,
+  analysis_error: error || undefined,
+});
+
+export const getDefaultCategoryNames = (customCategories: Category[], language: string = 'zh'): string[] => {
+  const customNames = customCategories.map(c => c.name);
+  return [
+    ...customNames,
+    ...defaultCategories.map(category => language === 'zh'
+      ? category.name
+      : translateCategoryName(category.name)),
+  ];
+};
