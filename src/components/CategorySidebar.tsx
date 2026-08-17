@@ -15,7 +15,7 @@ import {
   Palette,
   GraduationCap,
   Lightbulb,
-} from 'lucide-react';
+} from '@lucide/vue';
 import { Category, Repository } from '../types';
 import { useAppStore, getAllCategories, sortCategoriesByOrder } from '../store/useAppStore';
 import { CategoryEditModal } from './CategoryEditModal';

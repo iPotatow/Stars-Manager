@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 
 export const BackToTop: React.FC = () => {

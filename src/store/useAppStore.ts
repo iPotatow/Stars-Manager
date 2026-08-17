@@ -50,6 +50,7 @@ import {
 } from '../utils/releaseSources';
 import { logger } from '../services/logger';
 import { PRESET_FILTERS } from '../constants/presetFilters';
+import { registerExternalStore } from '../vue-compat';
 import {
   defaultCategories,
   translateCategoryName,
@@ -938,7 +939,7 @@ const defaultDiscoveryChannels: DiscoveryChannel[] = [
   { id: 'search', name: '搜索发现', nameEn: 'Search', icon: 'search', description: '自定义搜索发现新项目', enabled: true },
 ];
 
-export const useAppStore = create<AppState & AppActions>()(
+const zustandAppStore = create<AppState & AppActions>()(
   persist(
     (set) => ({
       // Initial state
@@ -2107,6 +2108,23 @@ export const useAppStore = create<AppState & AppActions>()(
       },
     }
   )
+);
+
+// Vue components use the same store API as the previous React UI. The
+// compatibility wrapper subscribes the currently-rendering Vue component to
+// Zustand while preserving getState/setState/subscribe for services and tests.
+export const useAppStore = Object.assign(
+  ((selector?: (state: AppState & AppActions) => unknown) => {
+    registerExternalStore(zustandAppStore);
+    const state = zustandAppStore.getState();
+    return selector ? selector(state) : state;
+  }) as typeof zustandAppStore,
+  {
+    getState: zustandAppStore.getState,
+    setState: zustandAppStore.setState,
+    subscribe: zustandAppStore.subscribe,
+    destroy: zustandAppStore.destroy,
+  },
 );
 
 // Helper function to sort categories by order

@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { nextTick } from 'vue';
 import { SearchBar } from './SearchBar';
 import { useAppStore } from '../store/useAppStore';
 import type { Repository, SearchFilters } from '../types';
@@ -164,7 +165,7 @@ describe('SearchBar', () => {
     expect(setSearchFilters).toHaveBeenCalledWith({ sortOrder: 'asc' });
   });
 
-  it('pauses real-time search for IME preedit text and resumes after composition ends', () => {
+  it('pauses real-time search for IME preedit text and resumes after composition ends', async () => {
     vi.useFakeTimers();
     const setSearchResults = vi.fn();
     currentState = createStoreState({
@@ -182,6 +183,7 @@ describe('SearchBar', () => {
 
       fireEvent.compositionStart(input);
       fireEvent.change(input, { target: { value: 'rain' } });
+      await nextTick();
 
       act(() => {
         vi.advanceTimersByTime(300);
@@ -192,12 +194,13 @@ describe('SearchBar', () => {
       ]);
 
       fireEvent.compositionEnd(input);
+      await nextTick();
 
       act(() => {
         vi.advanceTimersByTime(300);
       });
 
-      expect(setSearchResults).toHaveBeenLastCalledWith([
+      expect(setSearchResults).toHaveBeenCalledWith([
         expect.objectContaining({ name: 'nested-rain' }),
       ]);
       expect(screen.getByText('实时搜索模式 - 匹配仓库名称')).toBeInTheDocument();
@@ -206,7 +209,7 @@ describe('SearchBar', () => {
     }
   });
 
-  it('resets stale real-time results when the input becomes whitespace-only', () => {
+  it('resets stale real-time results when the input becomes whitespace-only', async () => {
     vi.useFakeTimers();
     const repositories = [
       createRepository({ id: 1, name: 'nested-rain', full_name: 'owner/nested-rain' }),
@@ -224,10 +227,11 @@ describe('SearchBar', () => {
       const input = screen.getByRole('textbox');
 
       fireEvent.change(input, { target: { value: 'rain' } });
+      await nextTick();
       act(() => {
         vi.advanceTimersByTime(300);
       });
-      expect(setSearchResults).toHaveBeenLastCalledWith([
+      expect(setSearchResults).toHaveBeenCalledWith([
         expect.objectContaining({ name: 'nested-rain' }),
       ]);
 

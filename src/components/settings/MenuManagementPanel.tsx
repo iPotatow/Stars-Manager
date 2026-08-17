@@ -11,7 +11,7 @@ import {
   ChevronUp,
   ChevronDown,
   Info,
-} from 'lucide-react';
+} from '@lucide/vue';
 import { useAppStore } from '../../store/useAppStore';
 import { HeaderMenuId } from '../../types';
 

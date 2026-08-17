@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Bot, Lightbulb, Play, CheckCircle } from 'lucide-react';
+import { Search, Bot, Lightbulb, Play, CheckCircle } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 
 interface SearchExample {

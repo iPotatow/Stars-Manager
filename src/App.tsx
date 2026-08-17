@@ -115,7 +115,7 @@ const VIEW_LABELS: Record<AppState['currentView'], { zh: string; en: string }> =
   settings: { zh: '设置', en: 'Settings' },
 };
 
-function App() {
+const App: React.FC = () => {
   const [runtimeReady, setRuntimeReady] = useState(false);
   const {
     user,
@@ -280,6 +280,6 @@ function App() {
       <BackToTop />
     </div>
   );
-}
+};
 
 export default App;

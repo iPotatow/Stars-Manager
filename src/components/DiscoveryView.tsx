@@ -17,7 +17,7 @@ import {
   Globe,
   X,
   Calendar
-} from 'lucide-react';
+} from '@lucide/vue';
 import { useAppStore, getAllCategories } from '../store/useAppStore';
 import { createGitHubApiService } from '../services/githubApiFactory';
 import { AIService } from '../services/aiService';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { RotateCcw, Search } from 'lucide-react';
+import { RotateCcw, Search } from '@lucide/vue';
 
 interface SimilarViewBannerProps {
   anchorRepoName: string;

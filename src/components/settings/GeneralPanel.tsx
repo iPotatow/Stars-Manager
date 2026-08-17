@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, Package } from 'lucide-react';
+import { Globe, Package } from '@lucide/vue';
 import { useAppStore } from '../../store/useAppStore';
 
 interface GeneralPanelProps {

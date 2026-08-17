@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Bot, Clock, Copy, Edit3, ExternalLink, FileCode2, Loader2, StarOff, Trash2, User } from 'lucide-react';
+import { Bot, Clock, Copy, Edit3, ExternalLink, FileCode2, Loader2, StarOff, Trash2, User } from '@lucide/vue';
 import type { Gist } from '../types';
 import { createGitHubApiService } from '../services/githubApiFactory';
 import { AIService } from '../services/aiService';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus } from 'lucide-react';
+import { X, Plus } from '@lucide/vue';
 import { Modal } from './Modal';
 import { AssetFilter } from '../types';
 

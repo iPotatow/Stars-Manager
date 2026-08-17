@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Package, Search, X, RefreshCw, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Loader2 } from 'lucide-react';
+import { Package, Search, X, RefreshCw, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Loader2 } from '@lucide/vue';
 import { ForkRepo, GitHubOrganization, WorkflowDefinition } from '../types';
 import { useAppStore } from '../store/useAppStore';
 import { createGitHubApiService } from '../services/githubApiFactory';

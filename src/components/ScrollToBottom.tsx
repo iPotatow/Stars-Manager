@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 
 interface ScrollToBottomProps {

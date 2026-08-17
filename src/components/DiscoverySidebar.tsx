@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshCw, Loader2, TrendingUp, Rocket, Crown, Tag, Search } from 'lucide-react';
+import { RefreshCw, Loader2, TrendingUp, Rocket, Crown, Tag, Search } from '@lucide/vue';
 import type { DiscoveryChannel, DiscoveryChannelId, DiscoveryChannelIcon } from '../types';
 
 const discoveryChannelIconMap: Record<DiscoveryChannelIcon, React.ReactNode> = {

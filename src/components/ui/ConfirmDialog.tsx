@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useId } from 'react';
 import { createPortal } from 'react-dom';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@lucide/vue';
 
 interface ConfirmDialogProps {
   isOpen: boolean;

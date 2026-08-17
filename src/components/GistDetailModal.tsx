@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import hljs from 'highlight.js';
-import { AlertCircle, Copy, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
+import { AlertCircle, Copy, ExternalLink, Loader2, RefreshCw } from '@lucide/vue';
 import { Modal } from './Modal';
 import type { Gist, GistFile } from '../types';
 import { getGistTitle, inferGistCodeLanguage } from '../utils/gistUtils';
@@ -75,7 +75,6 @@ const HighlightedCode: React.FC<HighlightedCodeProps> = ({ file, onContentLoaded
 
     return () => controller.abort();
     // retryTick 用于手动触发重试；file.raw_url/filename 变化时也会重新拉取。
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [needsRawFetch, file.raw_url, file.filename, retryTick, githubToken]);
 
   useEffect(() => {

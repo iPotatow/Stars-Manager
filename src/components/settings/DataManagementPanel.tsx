@@ -3,7 +3,7 @@ import {
   Trash2,
   AlertTriangle,
   Database,
-  Github,
+  GitBranch,
   Tag,
   Bot,
   FolderTree,
@@ -20,7 +20,7 @@ import {
   HardDrive,
   RefreshCw,
   Rss,
-} from 'lucide-react';
+} from '@lucide/vue';
 import { useAppStore } from '../../store/useAppStore';
 import {
   indexedDBStorage,
@@ -1020,7 +1020,7 @@ export const DataManagementPanel: React.FC<DataManagementPanelProps> = ({ t }) =
       description: t('管理的 GitHub Stars 仓库列表，含 AI 摘要、标签和平台信息。删除后需重新同步。',
         'GitHub Stars repositories with AI summaries, tags, and platform info. Re-sync required after deletion.'),
       count: repositories.length,
-      icon: <Github className="w-5 h-5" />,
+      icon: <GitBranch className="w-5 h-5" />,
       color: 'text-gray-700 dark:text-text-secondary',
       bgColor: 'bg-gray-100 dark:bg-white/[0.04]',
     },

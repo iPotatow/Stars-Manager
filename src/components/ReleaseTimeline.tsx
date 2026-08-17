@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { Package, Bell, Search, X, RefreshCw, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LayoutGrid, CalendarDays, ChevronDown, CheckCircle, Filter, Settings } from 'lucide-react';
+import { Package, Bell, Search, X, RefreshCw, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LayoutGrid, CalendarDays, ChevronDown, CheckCircle, Filter, Settings } from '@lucide/vue';
 import { Release } from '../types';
 import { useAppStore } from '../store/useAppStore';
 import { createGitHubApiService } from '../services/githubApiFactory';
@@ -309,7 +309,6 @@ export const ReleaseTimeline: React.FC = () => {
     }
     return latestModeReleases;
     // snapshotVersion 触发快照更新后重算；readReleases 不在此处以避免标记已读立即消失
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [latestModeReleases, releaseShowMode, snapshotVersion]);
 
   const unreadCount = useMemo(() => {

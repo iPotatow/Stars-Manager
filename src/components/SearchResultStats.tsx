@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Bot, Clock, TrendingUp } from 'lucide-react';
+import { Search, Bot, Clock, TrendingUp } from '@lucide/vue';
 import { Repository } from '../types';
 import { useAppStore } from '../store/useAppStore';
 

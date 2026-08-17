@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from 'react';
-import { Minus, Plus } from 'lucide-react';
+import { Minus, Plus } from '@lucide/vue';
 
 interface StepperInputProps {
   value: number;

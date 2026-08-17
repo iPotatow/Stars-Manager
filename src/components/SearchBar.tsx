@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, X, SlidersHorizontal, Monitor, Smartphone, Globe, Terminal, Package, CheckCircle, Bell, BellOff, Apple, Bot, Edit3, Lock, Unlock, AlertCircle, ChevronDown, RefreshCw, Clock } from 'lucide-react';
+import { Search, X, SlidersHorizontal, Monitor, Smartphone, Globe, Terminal, Package, CheckCircle, Bell, BellOff, Apple, Bot, Edit3, Lock, Unlock, AlertCircle, ChevronDown, RefreshCw, Clock } from '@lucide/vue';
 import { useAppStore, getAllCategories } from '../store/useAppStore';
 import { AIService } from '../services/aiService';
 import { EmbeddingClient, VectorSearchService } from '../services/vectorSearchService';
@@ -107,6 +107,8 @@ export const SearchBar: React.FC = () => {
   const [availableLicenses, setAvailableLicenses] = useState<string[]>([]);
   const [isRealTimeSearch, setIsRealTimeSearch] = useState(false);
   const [isComposing, setIsComposing] = useState(false);
+  const isComposingRef = useRef(false);
+  const realTimeSearchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const allCategories = useMemo(() => 
     getAllCategories(customCategories, language, hiddenDefaultCategoryIds, defaultCategoryOverrides),
@@ -253,24 +255,16 @@ export const SearchBar: React.FC = () => {
     performSearch();
     // Search helpers are intentionally kept as local closures; the explicit deps below
     // cover the state they read without causing a search loop on every render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchFilters.languages, searchFilters.tags, searchFilters.platforms, searchFilters.licenses, searchFilters.isAnalyzed, searchFilters.isSubscribed, searchFilters.isEdited, searchFilters.isCategoryLocked, searchFilters.analysisFailed, searchFilters.minStars, searchFilters.maxStars, searchFilters.sortBy, searchFilters.sortOrder, searchFilters.query, repositories, releaseSubscriptions, allCategories]);
 
   // Real-time search effect for repository name matching
   useEffect(() => {
-    if (searchQuery.trim() && isRealTimeSearch && !isComposing) {
-      const timeoutId = setTimeout(() => {
-        performRealTimeSearch(searchQuery);
-      }, 300); // 300ms debounce to avoid too frequent searches
-
-      return () => clearTimeout(timeoutId);
-    } else if (!searchQuery.trim()) {
+    if (!searchQuery.trim()) {
       // Reset to show all repositories when search is empty or whitespace-only
       performBasicFilter();
     }
     // Search helpers are intentionally kept as local closures; the explicit deps below
     // cover the state they read without causing a search loop on every render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, isRealTimeSearch, isComposing, repositories, allCategories]);
 
   const updateRealTimeSearchState = (value: string) => {
@@ -281,12 +275,20 @@ export const SearchBar: React.FC = () => {
   // Track composition separately so the debounce pauses for preedit text without
   // relying on composition events to re-arm real-time search after typing.
   const handleCompositionStart = () => {
+    isComposingRef.current = true;
+    if (realTimeSearchTimeoutRef.current) {
+      clearTimeout(realTimeSearchTimeoutRef.current);
+      realTimeSearchTimeoutRef.current = null;
+    }
     setIsComposing(true);
   };
 
-  const handleCompositionEnd = (e: React.CompositionEvent<HTMLInputElement>) => {
+  const handleCompositionEnd = (e: React.CompositionEvent<Element>) => {
+    isComposingRef.current = false;
     setIsComposing(false);
-    updateRealTimeSearchState(e.currentTarget.value);
+    const value = (e.currentTarget as HTMLInputElement).value;
+    updateRealTimeSearchState(value);
+    scheduleRealTimeSearch(value);
   };
 
   const performRealTimeSearch = (query: string) => {
@@ -315,6 +317,21 @@ export const SearchBar: React.FC = () => {
   const performBasicFilter = () => {
     const filtered = applyFilters(repositories);
     setSearchResults(filtered);
+  };
+
+  const scheduleRealTimeSearch = (query: string) => {
+    if (realTimeSearchTimeoutRef.current) {
+      clearTimeout(realTimeSearchTimeoutRef.current);
+      realTimeSearchTimeoutRef.current = null;
+    }
+    if (!query.trim()) {
+      performBasicFilter();
+      return;
+    }
+    realTimeSearchTimeoutRef.current = setTimeout(() => {
+      realTimeSearchTimeoutRef.current = null;
+      performRealTimeSearch(query);
+    }, 300);
   };
 
   const performBasicTextSearch = (repos: typeof repositories, query: string) =>
@@ -555,6 +572,14 @@ export const SearchBar: React.FC = () => {
     // Keep real-time search armed whenever the input has searchable text.
     // A separate composing flag pauses debounce while IME preedit text is active.
     updateRealTimeSearchState(value);
+    if (isComposingRef.current) {
+      if (realTimeSearchTimeoutRef.current) {
+        clearTimeout(realTimeSearchTimeoutRef.current);
+        realTimeSearchTimeoutRef.current = null;
+      }
+    } else {
+      scheduleRealTimeSearch(value);
+    }
 
     // Show search history when input is focused and empty
     if (!value && searchHistory.length > 0) {
@@ -804,8 +829,8 @@ export const SearchBar: React.FC = () => {
           onKeyDown={handleKeyDown}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
-          onCompositionStart={handleCompositionStart}
-          onCompositionEnd={handleCompositionEnd}
+          onCompositionstart={handleCompositionStart}
+          onCompositionend={handleCompositionEnd}
           className="gsm-field h-12 pl-11 pr-24 text-[13px] sm:pr-44"
         />
 

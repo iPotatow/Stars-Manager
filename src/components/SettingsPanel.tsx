@@ -9,7 +9,7 @@ import {
   Cable,
   Trash2,
   Layout,
-} from 'lucide-react';
+} from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 import {
   GeneralPanel,

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { CheckCircle, AlertCircle, Info, AlertTriangle, X } from 'lucide-react';
+import { CheckCircle, AlertCircle, Info, AlertTriangle, X } from '@lucide/vue';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 

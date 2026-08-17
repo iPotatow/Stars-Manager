@@ -8,7 +8,7 @@ import {
   Loader2,
   RefreshCw,
   AlertCircle,
-} from 'lucide-react';
+} from '@lucide/vue';
 import { useAppStore } from '../../store/useAppStore';
 import { backend } from '../../services/backendAdapter';
 import { useDialog } from '../../hooks/useDialog';

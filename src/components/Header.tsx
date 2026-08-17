@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { LogOut, Menu, X } from 'lucide-react';
+import { LogOut, Menu, X } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 import { useDialog } from '../hooks/useDialog';
 import { backend } from '../services/backendAdapter';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Keyboard, X, HelpCircle } from 'lucide-react';
+import { Keyboard, X, HelpCircle } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 import { searchShortcuts } from '../hooks/useSearchShortcuts';
 

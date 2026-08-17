@@ -10,7 +10,7 @@ import {
 } from '../utils/domTextScanner';
 import { translateBatch, TranslateResult } from '../services/translateService';
 import { detectLanguage, getTranslateDirection, cleanTranslatedText } from '../utils/markdownSplitter';
-import { FileText, Languages, Eye, Loader2 } from 'lucide-react';
+import { FileText, Languages, Eye, Loader2 } from '@lucide/vue';
 
 export type DisplayMode = 'original' | 'translated' | 'bilingual';
 export type TranslationStatus = 'idle' | 'scanning' | 'translating' | 'translated' | 'error';

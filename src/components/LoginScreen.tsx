@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertCircle, ArrowRight, Key, UserRound } from 'lucide-react';
+import { AlertCircle, ArrowRight, Key, UserRound } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 import { createGitHubApiService } from '../services/githubApiFactory';
 import { backend } from '../services/backendAdapter';

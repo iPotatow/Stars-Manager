@@ -9,7 +9,7 @@ import {
   RefreshCw,
   Square,
   Zap,
-} from 'lucide-react';
+} from '@lucide/vue';
 import {
   LEGACY_EMBEDDING_FORMAT_VERSION,
   isKnownEmbeddingFormatVersion,

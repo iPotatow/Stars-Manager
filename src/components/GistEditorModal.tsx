@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from '@lucide/vue';
 import { Modal } from './Modal';
 import type { Gist } from '../types';
 import type { GistCreateInput, GistUpdateInput } from '../services/githubApi';

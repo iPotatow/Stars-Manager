@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Info } from 'lucide-react';
+import { Info } from '@lucide/vue';
 import type { DiscoveryChannelId } from '../types';
 
 interface SortAlgorithmTooltipProps {
