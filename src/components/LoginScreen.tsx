@@ -148,7 +148,7 @@ export const LoginScreen: React.FC = () => {
                   type="text"
                   placeholder="ADMIN_USER"
                   value={username}
-                  onChange={(event) => { setUsername(event.target.value); setError(''); }}
+                  onInput={(event) => { setUsername(event.target.value); setError(''); }}
                   onKeyDown={(event) => void handleKeyPress(event, 'login')}
                   disabled={isLoading}
                   autoComplete="username"
@@ -164,7 +164,7 @@ export const LoginScreen: React.FC = () => {
                   type="password"
                   placeholder="ADMIN_PASSWORD"
                   value={password}
-                  onChange={(event) => { setPassword(event.target.value); setError(''); }}
+                  onInput={(event) => { setPassword(event.target.value); setError(''); }}
                   onKeyDown={(event) => void handleKeyPress(event, 'login')}
                   disabled={isLoading}
                   autoComplete="current-password"
@@ -194,7 +194,7 @@ export const LoginScreen: React.FC = () => {
                   type="password"
                   placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
                   value={token}
-                  onChange={(event) => { setToken(event.target.value); setError(''); }}
+                  onInput={(event) => { setToken(event.target.value); setError(''); }}
                   onKeyDown={(event) => void handleKeyPress(event, 'github')}
                   disabled={isLoading}
                   autoComplete="off"
