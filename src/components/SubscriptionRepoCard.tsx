@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import Vue, { useState, useMemo, useCallback, useRef, useEffect } from "../vue-runtime.ts";
 import { Star, StarOff, ExternalLink, Bot, GitFork, Monitor, Smartphone, Globe, Terminal, Package, Sparkles, BookOpen, AlertTriangle } from '@lucide/vue';
 import type { DiscoveryRepo } from '../types';
 import { useAppStore, getAllCategories } from '../store/useAppStore';
@@ -16,7 +16,7 @@ interface SubscriptionRepoCardProps {
   onAnalyze?: (repo: DiscoveryRepo) => void;
 }
 
-export const SubscriptionRepoCard: React.FC<SubscriptionRepoCardProps> = ({ repo, onStar, onAnalyze }) => {
+export const SubscriptionRepoCard: Vue.FC<SubscriptionRepoCardProps> = ({ repo, onStar, onAnalyze }) => {
   const language = useAppStore(state => state.language);
   const githubToken = useAppStore(state => state.githubToken);
   const aiConfigs = useAppStore(state => state.aiConfigs);
@@ -172,7 +172,7 @@ export const SubscriptionRepoCard: React.FC<SubscriptionRepoCardProps> = ({ repo
   }, [githubToken, repo, repositories, deleteRepository, t, toast]);
 
   // 处理添加/取消Star
-  const handleStar = useCallback(async (e: React.MouseEvent) => {
+  const handleStar = useCallback(async (e: Vue.MouseEvent) => {
     e.stopPropagation();
     if (!githubToken || isStarring) return;
 
@@ -230,14 +230,14 @@ export const SubscriptionRepoCard: React.FC<SubscriptionRepoCardProps> = ({ repo
   }, [githubToken, isStarring, repo, onStar, t, toast, isStarred, addRepository, executeUnstar]);
 
   // 处理在ZRead打开
-  const handleOpenInZRead = useCallback((e: React.MouseEvent) => {
+  const handleOpenInZRead = useCallback((e: Vue.MouseEvent) => {
     e.stopPropagation();
     const zreadUrl = `https://zread.ai/${repo.full_name}`;
     window.open(zreadUrl, '_blank');
   }, [repo.full_name]);
 
   // 处理单个项目AI分析
-  const handleAnalyze = useCallback(async (e: React.MouseEvent) => {
+  const handleAnalyze = useCallback(async (e: Vue.MouseEvent) => {
     e.stopPropagation();
 
     if (!githubToken) {

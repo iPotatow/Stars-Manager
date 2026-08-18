@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useId } from 'react';
-import { createPortal } from 'react-dom';
+import Vue, { useEffect, useRef, useId } from "../../vue-runtime.ts";
+import { createPortal } from "../../vue-dom.ts";
 import { AlertTriangle } from '@lucide/vue';
 
 interface ConfirmDialogProps {
@@ -13,7 +13,7 @@ interface ConfirmDialogProps {
   type?: 'danger' | 'warning' | 'info';
 }
 
-export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
+export const ConfirmDialog: Vue.FC<ConfirmDialogProps> = ({
   isOpen,
   title,
   message,

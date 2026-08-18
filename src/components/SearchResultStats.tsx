@@ -1,4 +1,4 @@
-import React from 'react';
+import Vue from "../vue-runtime.ts";
 import { Search, Bot, Clock, TrendingUp } from '@lucide/vue';
 import { Repository } from '../types';
 import { useAppStore } from '../store/useAppStore';
@@ -11,7 +11,7 @@ interface SearchResultStatsProps {
   searchTime?: number;
 }
 
-export const SearchResultStats: React.FC<SearchResultStatsProps> = ({
+export const SearchResultStats: Vue.FC<SearchResultStatsProps> = ({
   repositories,
   filteredRepositories,
   searchQuery,

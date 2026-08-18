@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import Vue, { useEffect, useMemo, useState } from "../vue-runtime.ts";
 import { Plus, Trash2 } from '@lucide/vue';
 import { Modal } from './Modal';
 import type { Gist } from '../types';
@@ -34,7 +34,7 @@ const createEmptyFile = (): EditableFile => ({
   content: '',
 });
 
-export const GistEditorModal: React.FC<GistEditorModalProps> = ({ gist, isOpen, onClose, onSubmit }) => {
+export const GistEditorModal: Vue.FC<GistEditorModalProps> = ({ gist, isOpen, onClose, onSubmit }) => {
   const language = useAppStore(state => state.language);
   const t = (zh: string, en: string) => language === 'zh' ? zh : en;
   const [description, setDescription] = useState('');

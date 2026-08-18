@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import Vue, { useState, useCallback, useMemo, useRef, useEffect } from "../vue-runtime.ts";
 import {
   RefreshCw,
   TrendingUp,
@@ -42,7 +42,7 @@ import type {
   TrendingTimeRange
 } from '../types';
 
-const discoveryChannelIconMap: Record<DiscoveryChannelIcon, React.ReactNode> = {
+const discoveryChannelIconMap: Record<DiscoveryChannelIcon, Vue.Node> = {
   trending: <TrendingUp className="w-4 h-4 text-gray-700 dark:text-text-secondary" />,
   rocket: <Rocket className="w-4 h-4 text-gray-700 dark:text-text-secondary" />,
   star: <Crown className="w-4 h-4 text-gray-700 dark:text-text-secondary" />,
@@ -50,7 +50,7 @@ const discoveryChannelIconMap: Record<DiscoveryChannelIcon, React.ReactNode> = {
   search: <Search className="w-4 h-4 text-gray-700 dark:text-text-secondary" />,
 };
 
-const discoveryChannelStyleMap: Record<DiscoveryChannelIcon, { gradient: string; shadow: string; largeIcon: React.ReactNode }> = {
+const discoveryChannelStyleMap: Record<DiscoveryChannelIcon, { gradient: string; shadow: string; largeIcon: Vue.Node }> = {
   trending: {
     gradient: 'from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700',
     shadow: 'shadow-black/[0.08]',
@@ -79,13 +79,13 @@ const discoveryChannelStyleMap: Record<DiscoveryChannelIcon, { gradient: string;
 };
 
 interface MobileTabNavProps {
-  channels: { id: DiscoveryChannelId; name: string; nameEn: string; icon: React.ReactNode }[];
+  channels: { id: DiscoveryChannelId; name: string; nameEn: string; icon: Vue.Node }[];
   selectedChannel: DiscoveryChannelId;
   onChannelSelect: (channel: DiscoveryChannelId) => void;
   language: 'zh' | 'en';
 }
 
-const MobileTabNav: React.FC<MobileTabNavProps> = ({ 
+const MobileTabNav: Vue.FC<MobileTabNavProps> = ({
   channels, 
   selectedChannel, 
   onChannelSelect,
@@ -186,7 +186,7 @@ const MobileTabNav: React.FC<MobileTabNavProps> = ({
           <button
             key={channel.id}
             ref={(el) => {
-              if (el) tabRefs.current.set(channel.id, el);
+              if (el) tabRefs.current.set(channel.id, el as HTMLButtonElement);
             }}
             onClick={() => onChannelSelect(channel.id)}
             role="tab"
@@ -227,11 +227,11 @@ interface PlatformFilterProps {
   language: 'zh' | 'en';
 }
 
-const PlatformFilter: React.FC<PlatformFilterProps> = ({ platform, onPlatformChange, language }) => {
+const PlatformFilter: Vue.FC<PlatformFilterProps> = ({ platform, onPlatformChange, language }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const platforms: { id: DiscoveryPlatform; name: string; nameEn: string; icon: React.ReactNode }[] = [
+  const platforms: { id: DiscoveryPlatform; name: string; nameEn: string; icon: Vue.Node }[] = [
     { id: 'All', name: '全部平台', nameEn: 'All Platforms', icon: <Globe className="w-4 h-4" /> },
     { id: 'Android', name: 'Android', nameEn: 'Android', icon: <Smartphone className="w-4 h-4" /> },
     { id: 'Macos', name: 'macOS', nameEn: 'macOS', icon: <Apple className="w-4 h-4" /> },
@@ -291,7 +291,7 @@ const PlatformFilter: React.FC<PlatformFilterProps> = ({ platform, onPlatformCha
 interface CustomSelectOption {
   value: string;
   label: string;
-  icon?: React.ReactNode;
+  icon?: Vue.Node;
 }
 
 interface CustomSelectProps {
@@ -302,7 +302,7 @@ interface CustomSelectProps {
   dropdownClassName?: string;
 }
 
-const CustomSelect: React.FC<CustomSelectProps> = ({
+const CustomSelect: Vue.FC<CustomSelectProps> = ({
   value,
   onChange,
   options,
@@ -371,7 +371,7 @@ interface LoadMoreButtonProps {
   language: 'zh' | 'en';
 }
 
-const LoadMoreButton: React.FC<LoadMoreButtonProps> = ({
+const LoadMoreButton: Vue.FC<LoadMoreButtonProps> = ({
   onLoadMore,
   isLoading,
   hasMore,
@@ -425,7 +425,7 @@ interface DataStatsProps {
   language: 'zh' | 'en';
 }
 
-const DataStats: React.FC<DataStatsProps> = ({ currentCount, totalCount, language }) => {
+const DataStats: Vue.FC<DataStatsProps> = ({ currentCount, totalCount, language }) => {
   const t = (zh: string, en: string) => language === 'zh' ? zh : en;
   
   return (
@@ -443,7 +443,7 @@ const DataStats: React.FC<DataStatsProps> = ({ currentCount, totalCount, languag
   );
 };
 
-export const DiscoveryView: React.FC = React.memo(() => {
+export const DiscoveryView: Vue.FC = Vue.memo(() => {
   const {
     githubToken,
     language,

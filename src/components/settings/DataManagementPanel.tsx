@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import Vue, { useState, useCallback, useMemo } from "../../vue-runtime.ts";
 import {
   Trash2,
   AlertTriangle,
@@ -72,7 +72,7 @@ interface DataCleanupSuggestion {
   description: string;
   descriptionEn: string;
   count: number;
-  icon: React.ReactNode;
+  icon: Vue.Node;
   color: string;
   bgColor: string;
 }
@@ -87,7 +87,7 @@ const hasMaskedSecrets = (data: DataSnapshotPayload): boolean => (
   !!data.aiConfigs?.some(config => config.apiKey === MASKED_SECRET)
 );
 
-export const DataManagementPanel: React.FC<DataManagementPanelProps> = ({ t }) => {
+export const DataManagementPanel: Vue.FC<DataManagementPanelProps> = ({ t }) => {
   const {
     user,
     repositories,
@@ -465,7 +465,7 @@ export const DataManagementPanel: React.FC<DataManagementPanelProps> = ({ t }) =
     }
   }, [addLog, showSuccess, showError, t]);
 
-  const handleImportFile = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImportFile = useCallback((event: Vue.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 

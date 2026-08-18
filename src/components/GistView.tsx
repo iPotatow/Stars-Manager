@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Vue, { useEffect, useMemo, useRef, useState } from "../vue-runtime.ts";
 import { Bot, ChevronDown, FileCode2, HelpCircle, Loader2, Plus, RefreshCw, Search, Star, User, X } from '@lucide/vue';
 import { GistCard } from './GistCard';
 import { GistDetailModal } from './GistDetailModal';
@@ -24,7 +24,7 @@ const sortOptions = [
   { value: 'files', labelZh: '按文件数', labelEn: 'Files' },
 ] as const;
 
-export const GistView: React.FC = () => {
+export const GistView: Vue.FC = () => {
   const {
     user,
     githubToken,

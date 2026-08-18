@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import Vue, { useState } from "../vue-runtime.ts";
 import { Search, Bot, Lightbulb, Play, CheckCircle } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 
@@ -44,11 +44,11 @@ const searchExamples: SearchExample[] = [
     query: 'web development tools',
     type: 'ai',
     description: '按用途查找开发工具',
-    expectedResults: ['Webpack', 'Vite', 'React 等前端工具']
+    expectedResults: ['Webpack', 'Vite', 'Vue 等前端工具']
   }
 ];
 
-export const SearchDemo: React.FC = () => {
+export const SearchDemo: Vue.FC = () => {
   const { language } = useAppStore();
   const [selectedExample, setSelectedExample] = useState<SearchExample | null>(null);
   const [showDemo, setShowDemo] = useState(false);

@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '../vue-testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
 import { SearchBar } from './SearchBar';
@@ -203,7 +203,7 @@ describe('SearchBar', () => {
       expect(setSearchResults).toHaveBeenCalledWith([
         expect.objectContaining({ name: 'nested-rain' }),
       ]);
-      expect(screen.getByText('实时搜索模式 - 匹配仓库名称')).toBeInTheDocument();
+      expect(screen.getByText('实时匹配')).toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }

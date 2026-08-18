@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react';
+import Vue, { useEffect } from "../vue-runtime.ts";
 import { X } from '@lucide/vue';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  children: React.ReactNode;
+  children: Vue.Node;
   maxWidth?: string;
 }
 
-export const Modal: React.FC<ModalProps> = ({
+export const Modal: Vue.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,

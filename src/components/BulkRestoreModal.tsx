@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import Vue, { useState, useEffect, useMemo } from "../vue-runtime.ts";
 import { RotateCcw, Bot, FileText, Tag, FolderOpen, AlertTriangle, Info } from '@lucide/vue';
 import { Modal } from './Modal';
 import { Repository } from '../types';
@@ -27,7 +27,7 @@ interface BulkRestoreModalProps {
 
 export type { RestoreConfig, RestoreFieldConfig, RestoreTarget };
 
-export const BulkRestoreModal: React.FC<BulkRestoreModalProps> = ({
+export const BulkRestoreModal: Vue.FC<BulkRestoreModalProps> = ({
   isOpen,
   onClose,
   repositories,

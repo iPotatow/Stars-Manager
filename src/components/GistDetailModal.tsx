@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Vue, { useEffect, useMemo, useRef, useState } from "../vue-runtime.ts";
 import hljs from 'highlight.js';
 import { AlertCircle, Copy, ExternalLink, Loader2, RefreshCw } from '@lucide/vue';
 import { Modal } from './Modal';
@@ -21,7 +21,7 @@ interface HighlightedCodeProps {
   onContentLoaded?: (filename: string, content: string) => void;
 }
 
-const HighlightedCode: React.FC<HighlightedCodeProps> = ({ file, onContentLoaded }) => {
+const HighlightedCode: Vue.FC<HighlightedCodeProps> = ({ file, onContentLoaded }) => {
   const codeRef = useRef<HTMLElement>(null);
   const language = inferGistCodeLanguage(file.filename, file.language);
   const githubToken = useAppStore(state => state.githubToken);
@@ -125,7 +125,7 @@ const HighlightedCode: React.FC<HighlightedCodeProps> = ({ file, onContentLoaded
   );
 };
 
-export const GistDetailModal: React.FC<GistDetailModalProps> = ({ gist, isOpen, onClose }) => {
+export const GistDetailModal: Vue.FC<GistDetailModalProps> = ({ gist, isOpen, onClose }) => {
   const language = useAppStore(state => state.language);
   const updateGist = useAppStore(state => state.updateGist);
   const { toast } = useDialog();

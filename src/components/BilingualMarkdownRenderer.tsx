@@ -1,4 +1,4 @@
-import { memo, useState, useRef, useCallback, useEffect, useImperativeHandle, forwardRef } from 'react';
+import { memo, useState, useRef, useCallback, useEffect, useImperativeHandle, forwardRef } from "../vue-runtime.ts";
 import MarkdownRenderer from './MarkdownRenderer';
 import {
   scanDomForTranslation,

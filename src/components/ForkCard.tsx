@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import Vue, { memo, useCallback } from "../vue-runtime.ts";
 import { ExternalLink, GitFork, RefreshCw, ChevronDown, ChevronUp, FolderOpen, Folder, Play, Loader2 } from '@lucide/vue';
 import { ForkRepo, WorkflowDefinition } from '../types';
 import { formatDistanceToNow } from 'date-fns';
@@ -19,7 +19,7 @@ interface ForkCardProps {
   language: 'zh' | 'en';
 }
 
-const ForkCard: React.FC<ForkCardProps> = memo(({
+const ForkCard: Vue.FC<ForkCardProps> = memo(({
   fork,
   isUnread,
   isWorkflowsExpanded,

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import Vue, { useMemo, useState } from "../vue-runtime.ts";
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, Eye, EyeOff, Plus, RefreshCw, Trash2 } from '@lucide/vue';
 import type { CustomReleaseRepository, ReleaseSourceId } from '../types';
 import { useAppStore } from '../store/useAppStore';
@@ -33,12 +33,12 @@ interface PaginatedRepoListProps {
   repos: CustomReleaseRepository[];
   language: 'zh' | 'en';
   emptyText: string;
-  renderActions?: (repo: CustomReleaseRepository) => React.ReactNode;
+  renderActions?: (repo: CustomReleaseRepository) => Vue.Node;
 }
 
 const PAGE_SIZE = 8;
 
-const PaginatedRepoList: React.FC<PaginatedRepoListProps> = ({ repos, language, emptyText, renderActions }) => {
+const PaginatedRepoList: Vue.FC<PaginatedRepoListProps> = ({ repos, language, emptyText, renderActions }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [page, setPage] = useState(1);
   const t = (zh: string, en: string) => language === 'zh' ? zh : en;
@@ -111,7 +111,7 @@ const PaginatedRepoList: React.FC<PaginatedRepoListProps> = ({ repos, language, 
   );
 };
 
-const RepoListEditor: React.FC<RepoListEditorProps> = ({
+const RepoListEditor: Vue.FC<RepoListEditorProps> = ({
   sourceId,
   repos,
   title,
@@ -198,7 +198,7 @@ interface WatchCustomReleaseSyncPanelProps {
   language: 'zh' | 'en';
 }
 
-const WatchCustomReleaseSyncPanel: React.FC<WatchCustomReleaseSyncPanelProps> = ({ repos, language }) => {
+const WatchCustomReleaseSyncPanel: Vue.FC<WatchCustomReleaseSyncPanelProps> = ({ repos, language }) => {
   const githubToken = useAppStore(state => state.githubToken);
   const setReleaseSourceRepositories = useAppStore(state => state.setReleaseSourceRepositories);
   const updateReleaseSourceRepository = useAppStore(state => state.updateReleaseSourceRepository);
@@ -281,7 +281,7 @@ const WatchCustomReleaseSyncPanel: React.FC<WatchCustomReleaseSyncPanelProps> = 
   );
 };
 
-export const ReleaseSourceSettingsModal: React.FC<ReleaseSourceSettingsModalProps> = ({ isOpen, onClose }) => {
+export const ReleaseSourceSettingsModal: Vue.FC<ReleaseSourceSettingsModalProps> = ({ isOpen, onClose }) => {
   const language = useAppStore(state => state.language);
   const releaseSourceSettings = useAppStore(state => state.releaseSourceSettings);
   const releaseSubscriptions = useAppStore(state => state.releaseSubscriptions);

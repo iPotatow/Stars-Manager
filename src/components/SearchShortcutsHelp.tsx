@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import Vue, { useState } from "../vue-runtime.ts";
 import { Keyboard, X, HelpCircle } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 import { searchShortcuts } from '../hooks/useSearchShortcuts';
 
-export const SearchShortcutsHelp: React.FC = () => {
+export const SearchShortcutsHelp: Vue.FC = () => {
   const [showHelp, setShowHelp] = useState(false);
   const { language } = useAppStore();
 

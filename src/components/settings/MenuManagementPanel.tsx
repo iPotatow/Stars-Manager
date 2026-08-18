@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useMemo } from 'react';
+import Vue, { useState, useRef, useCallback, useMemo } from "../../vue-runtime.ts";
 import {
   Layout,
   Search,
@@ -20,7 +20,7 @@ interface MenuManagementPanelProps {
 }
 
 const MENU_META: Record<HeaderMenuId, {
-  icon: React.ComponentType<{ className?: string }>;
+  icon: Vue.ComponentType<{ className?: string }>;
   labelZh: string;
   labelEn: string;
   canHide: boolean;
@@ -33,7 +33,7 @@ const MENU_META: Record<HeaderMenuId, {
   settings: { icon: Settings, labelZh: '设置', labelEn: 'Settings', canHide: false },
 };
 
-export const MenuManagementPanel: React.FC<MenuManagementPanelProps> = ({ t }) => {
+export const MenuManagementPanel: Vue.FC<MenuManagementPanelProps> = ({ t }) => {
   const { headerMenuConfig, setHeaderMenuConfig } = useAppStore();
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
@@ -70,7 +70,7 @@ export const MenuManagementPanel: React.FC<MenuManagementPanelProps> = ({ t }) =
     if (index < sortedConfig.length - 1) reorder(index, index + 1);
   };
 
-  const handleDragStart = useCallback((e: React.DragEvent, index: number) => {
+  const handleDragStart = useCallback((e: Vue.DragEvent, index: number) => {
     setDragIndex(index);
     dragNodeRef.current = e.currentTarget as HTMLDivElement;
     e.dataTransfer.effectAllowed = 'move';
@@ -78,13 +78,13 @@ export const MenuManagementPanel: React.FC<MenuManagementPanelProps> = ({ t }) =
     e.dataTransfer.setData('text/plain', String(index));
   }, []);
 
-  const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
+  const handleDragOver = useCallback((e: Vue.DragEvent, index: number) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     setDragOverIndex(index);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent, toIndex: number) => {
+  const handleDrop = useCallback((e: Vue.DragEvent, toIndex: number) => {
     e.preventDefault();
     if (dragIndex !== null && dragIndex !== toIndex) {
       reorder(dragIndex, toIndex);

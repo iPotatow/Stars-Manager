@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Vue, { useState, useEffect, useRef, useCallback } from "../vue-runtime.ts";
 import { ArrowDown } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 
 interface ScrollToBottomProps {
-  scrollContainerRef: React.RefObject<HTMLElement>;
+  scrollContainerRef: Vue.RefObject<HTMLElement>;
 }
 
-export const ScrollToBottom: React.FC<ScrollToBottomProps> = ({ 
+export const ScrollToBottom: Vue.FC<ScrollToBottomProps> = ({
   scrollContainerRef 
 }) => {
   const [isVisible, setIsVisible] = useState(false);

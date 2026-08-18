@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import Vue, { useState, useEffect, useRef, useMemo } from "../vue-runtime.ts";
 import { Search, X, SlidersHorizontal, Monitor, Smartphone, Globe, Terminal, Package, CheckCircle, Bell, BellOff, Apple, Bot, Edit3, Lock, Unlock, AlertCircle, ChevronDown, RefreshCw, Clock } from '@lucide/vue';
 import { useAppStore, getAllCategories } from '../store/useAppStore';
 import { AIService } from '../services/aiService';
@@ -26,7 +26,7 @@ interface SortByDropdownProps {
   t: (zh: string, en: string) => string;
 }
 
-const SortByDropdown: React.FC<SortByDropdownProps> = ({ value, onChange, t }) => {
+const SortByDropdown: Vue.FC<SortByDropdownProps> = ({ value, onChange, t }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -78,7 +78,7 @@ const SortByDropdown: React.FC<SortByDropdownProps> = ({ value, onChange, t }) =
   );
 };
 
-export const SearchBar: React.FC = () => {
+export const SearchBar: Vue.FC = () => {
   const {
     searchFilters,
     repositories,
@@ -283,7 +283,7 @@ export const SearchBar: React.FC = () => {
     setIsComposing(true);
   };
 
-  const handleCompositionEnd = (e: React.CompositionEvent<Element>) => {
+  const handleCompositionEnd = (e: Vue.CompositionEvent<Element>) => {
     isComposingRef.current = false;
     setIsComposing(false);
     const value = (e.currentTarget as HTMLInputElement).value;
@@ -561,7 +561,7 @@ export const SearchBar: React.FC = () => {
     setSearchFilters({ query: '' });
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: Vue.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
 
@@ -643,8 +643,8 @@ export const SearchBar: React.FC = () => {
 
 
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+  const handleKeyDown = (e: Vue.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.nativeEvent?.isComposing) {
       handleAISearch();
     }
   };
@@ -821,8 +821,8 @@ export const SearchBar: React.FC = () => {
           ref={searchInputRef}
           type="text"
           placeholder={t(
-            "输入关键词实时搜索，或使用 AI 搜索理解查询含义",
-            "Type keywords for real-time search, or use AI search for semantic understanding"
+            "搜索仓库",
+            "Search repositories"
           )}
           value={searchQuery}
           onChange={handleInputChange}
@@ -889,7 +889,7 @@ export const SearchBar: React.FC = () => {
               ))}
           </div>
         )}
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1 sm:space-x-2">
+        <div className="absolute right-2 top-1/2 flex max-w-[calc(100%-16px)] -translate-y-1/2 items-center space-x-1 sm:space-x-2">
           {searchQuery && (
             <button
               onClick={handleClearSearch}
@@ -915,48 +915,25 @@ export const SearchBar: React.FC = () => {
               {searchPhase}
             </span>
           )}
-          <div className="group relative">
-            <AlertCircle className="w-4 h-4 text-gray-400 dark:text-text-quaternary cursor-help" />
-            <div className="absolute right-0 top-full mt-2 w-80 max-w-xs p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[9999] whitespace-normal break-words">
-              <p className="font-medium mb-1 text-gray-900 dark:text-white">
-                {t('关于AI搜索', 'About AI Search')}
-              </p>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                {activeAIConfig ? t(
-                  '使用配置的 AI 服务理解查询并重排结果，支持自然语言和概念匹配。',
-                  'Uses the configured AI service to interpret queries and rerank results. Supports natural-language and concept searches.'
-                ) : t(
-                  '未配置 AI 服务时，按名称、描述、标签和语言进行文本匹配，再使用默认排序和筛选。',
-                  'Without an AI service, search matches names, descriptions, tags, and languages, then applies the default sorting and filters.'
-                )}
-              </p>
-              <div className="absolute bottom-full right-4 w-2 h-2 bg-white dark:bg-gray-800 border-l border-t border-gray-200 dark:border-gray-700 transform rotate-45"></div>
-            </div>
-          </div>
         </div>
       </div>
 
       {/* Search Status Indicator */}
       {searchQuery && (
-        <div className="mb-4 flex items-center justify-between text-sm">
+        <div className="mb-3 flex flex-wrap items-center text-sm">
           <div className="flex items-center space-x-2">
             {isRealTimeSearch ? (
               <div className="flex items-center space-x-2 text-brand-violet dark:text-brand-violet">
                 <div className="w-2 h-2 bg-brand-violet rounded-full animate-pulse"></div>
-                <span>{t('实时搜索模式 - 匹配仓库名称', 'Real-time search mode - matching repository names')}</span>
+                <span>{t('实时匹配', 'Live matching')}</span>
               </div>
             ) : searchFilters.query ? (
               <div className="flex items-center space-x-2 text-gray-700 dark:text-text-secondary ">
                 <Bot className="w-4 h-4" />
-                <span>{t('AI 语义搜索 - 按相关性排序', 'AI semantic search - ranked by relevance')}</span>
+                <span>{t('按相关性排序', 'Sorted by relevance')}</span>
               </div>
             ) : null}
           </div>
-          {isRealTimeSearch && (
-            <div className="text-gray-500 dark:text-text-tertiary">
-              {t('按 Enter 或点击 AI 搜索进行语义搜索', 'Press Enter or click AI Search for semantic search')}
-            </div>
-          )}
         </div>
       )}
 
@@ -1232,7 +1209,7 @@ export const SearchBar: React.FC = () => {
                         : filterChipInactiveClass
                     }`}
                   >
-                    {React.createElement(getPlatformIcon(platform), { className: "w-4 h-4" })}
+                    {Vue.createElement(getPlatformIcon(platform), { className: "w-4 h-4" })}
                     <span>{getPlatformDisplayName(platform)}</span>
                   </button>
                 ))}

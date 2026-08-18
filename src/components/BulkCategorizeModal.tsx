@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import Vue, { useState, useEffect } from "../vue-runtime.ts";
 import { Check } from '@lucide/vue';
 import { Modal } from './Modal';
 import { Repository } from '../types';
@@ -11,7 +11,7 @@ interface BulkCategorizeModalProps {
   onCategorize: (categoryName: string) => Promise<void>;
 }
 
-export const BulkCategorizeModal: React.FC<BulkCategorizeModalProps> = ({
+export const BulkCategorizeModal: Vue.FC<BulkCategorizeModalProps> = ({
   isOpen,
   onClose,
   repositories,

@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { createPortal } from 'react-dom';
+import Vue, { useState, useRef, useEffect, useMemo, useCallback } from "../vue-runtime.ts";
+import { createPortal } from "../vue-dom.ts";
 import { GripVertical, Star, StarOff, ExternalLink, Calendar, Bell, BellOff, Bot, Sparkles, Monitor, Smartphone, Globe, Terminal, Package, Edit3, BookOpen, Apple, Square, CheckSquare, Loader2, HelpCircle, Search, Scale } from '@lucide/vue';
 import { Repository, Category } from '../types';
 import { useAppStore } from '../store/useAppStore';
@@ -13,18 +13,17 @@ import { RepositoryEditModal } from './RepositoryEditModal';
 import { ReadmeModal } from './ReadmeModal';
 import { FloatingTooltip } from './FloatingTooltip';
 import { NO_LICENSE_SENTINEL, normalizeLicense } from '../utils/licenseFilter';
-import { shallow } from 'zustand/shallow';
 import { useDialog } from '../hooks/useDialog';
 import { logger } from '../services/logger';
 
 // Selection-aware button component to centralize selectionMode disable logic
-interface SelectionAwareButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface SelectionAwareButtonProps extends Vue.ButtonHTMLAttributes<HTMLButtonElement> {
   selectionMode?: boolean;
-  children: React.ReactNode;
+  children: Vue.Node;
   variant?: 'default' | 'ai' | 'subscribe' | 'edit' | 'unstar';
 }
 
-const SelectionAwareButton: React.FC<SelectionAwareButtonProps> = ({
+const SelectionAwareButton: Vue.FC<SelectionAwareButtonProps> = ({
   selectionMode,
   children,
   variant = 'default',
@@ -44,7 +43,7 @@ const SelectionAwareButton: React.FC<SelectionAwareButtonProps> = ({
     unstar: 'bg-slate-100/80 disabled:cursor-not-allowed dark:bg-white/[0.04]',
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (e: Vue.MouseEvent<HTMLButtonElement>) => {
     // 阻止事件冒泡，防止触发卡片的点击事件
     e.stopPropagation();
     onClick?.(e);
@@ -75,13 +74,13 @@ interface RepositoryCardProps {
 
 const MAX_CACHE_SIZE = 500;
 
-const highlightCache = new Map<string, React.ReactNode>();
+const highlightCache = new Map<string, Vue.Node>();
 
 const escapeRegExp = (string: string): string => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 };
 
-const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
+const RepositoryCardComponent: Vue.FC<RepositoryCardProps> = ({
   repository,
   showAISummary = true,
   searchQuery = '',
@@ -132,8 +131,7 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
         enterSimilarView: state.enterSimilarView,
       }),
       []
-    ),
-    shallow
+    )
   );
 
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -179,7 +177,7 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
   const [isFindingSimilar, setIsFindingSimilar] = useState(false);
 
   // 高亮搜索关键词的工具函数 - 使用缓存优化
-  const highlightSearchTerm = useCallback((text: string, searchTerm: string): React.ReactNode => {
+  const highlightSearchTerm = useCallback((text: string, searchTerm: string): Vue.Node => {
     if (!searchTerm.trim() || !text) return text;
 
     const cacheKey = `${text}::${searchTerm}`;
@@ -700,7 +698,7 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
   const touchStartPosRef = useRef<{ x: number; y: number } | null>(null);
   const isTouchDraggingRef = useRef(false);
 
-  const handleDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDragStart = (event: Vue.DragEvent<HTMLDivElement>) => {
     event.dataTransfer.setData('application/x-gsm-repository-id', String(repository.id));
     event.dataTransfer.effectAllowed = 'move';
 
@@ -726,12 +724,12 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
     }, 200);
   };
 
-  const handleDragHandleMouseDown = (event: React.MouseEvent) => {
+  const handleDragHandleMouseDown = (event: Vue.MouseEvent) => {
     dragStartPosRef.current = { x: event.clientX, y: event.clientY };
     event.stopPropagation();
   };
 
-  const handleDragHandleClick = (event: React.MouseEvent) => {
+  const handleDragHandleClick = (event: Vue.MouseEvent) => {
     // 如果发生了拖拽，阻止点击事件
     if (isDraggingRef.current || (window as Window & { __isDraggingRepo?: boolean }).__isDraggingRepo) {
       event.preventDefault();
@@ -740,13 +738,13 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
   };
 
   // 移动端触摸拖拽处理
-  const handleTouchStart = (event: React.TouchEvent) => {
+  const handleTouchStart = (event: Vue.TouchEvent) => {
     const touch = event.touches[0];
     touchStartPosRef.current = { x: touch.clientX, y: touch.clientY };
     isTouchDraggingRef.current = false;
   };
 
-  const handleTouchMove = (event: React.TouchEvent) => {
+  const handleTouchMove = (event: Vue.TouchEvent) => {
     if (!touchStartPosRef.current) return;
     
     const touch = event.touches[0];
@@ -789,7 +787,7 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
   }, []);
 
   // 使用 useCallback 优化事件处理函数
-  const handleCardClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+  const handleCardClick = useCallback((event: Vue.MouseEvent<HTMLDivElement>) => {
     // 防止重复处理
     if (isProcessingClickRef.current) {
       event.preventDefault();
@@ -834,7 +832,7 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
   }, [selectionMode, onSelect, repository.id, hideDescriptionTooltip]);
 
   // 处理鼠标按下事件，阻止焦点变化导致页面滚动
-  const handleMouseDown = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseDown = useCallback((event: Vue.MouseEvent<HTMLDivElement>) => {
     // 在选择模式下，阻止默认行为以防止焦点变化
     if (selectionMode && onSelect) {
       event.preventDefault();
@@ -845,7 +843,7 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
   // 当编辑模态框或README模态框打开时，禁用卡片键盘事件
   const isModalOpen = editModalOpen || readmeModalOpen;
   
-  const handleCardKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleCardKeyDown = useCallback((event: Vue.KeyboardEvent<HTMLDivElement>) => {
     // 如果任何模态框打开，不处理键盘事件
     if (isModalOpen) return;
     
@@ -1219,8 +1217,8 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
   );
 };
 
-// 使用 React.memo 优化，避免不必要的重渲染
-export const RepositoryCard = React.memo(RepositoryCardComponent, (prevProps, nextProps) => {
+// 使用 Vue.memo 优化，避免不必要的重渲染
+export const RepositoryCard = Vue.memo(RepositoryCardComponent, (prevProps, nextProps) => {
   const allCategoriesEqual = 
     prevProps.allCategories.length === nextProps.allCategories.length &&
     prevProps.allCategories.every((cat, i) => {

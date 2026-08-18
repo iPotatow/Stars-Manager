@@ -1,176 +1,109 @@
-import React, { Component, ReactNode } from 'react';
+import { defineComponent, onErrorCaptured, ref } from 'vue';
 import { PROJECT_ISSUES_URL } from '../constants/project';
 import { logger } from '../services/logger';
-
-interface Props {
-  children: ReactNode;
-}
-
-interface State {
-  hasError: boolean;
-  error: Error | null;
-  errorInfo: React.ErrorInfo | null;
-  showDetails: boolean;
-}
 
 const getLocalizedStrings = () => {
   const lang = navigator.language?.startsWith('zh') ? 'zh' : 'en';
   return {
     title: lang === 'zh' ? '应用加载出错' : 'Application Error',
-    description: lang === 'zh'
-      ? '应用出错了。可以查看下方详情，或在 GitHub 提交问题。'
-      : 'The application encountered an error. Check the details below or report it on GitHub.',
+    description: lang === 'zh' ? '应用出错了。' : 'The application encountered an error.',
     reload: lang === 'zh' ? '重新加载页面' : 'Reload Page',
     reportIssue: lang === 'zh' ? '在 GitHub 上反馈问题' : 'Report Issue on GitHub',
-    toggleDetails: lang === 'zh' ? '显示/隐藏详细信息' : 'Show/Hide Details',
-    errorDetails: lang === 'zh' ? '错误详情' : 'Error Details',
-    stackTrace: lang === 'zh' ? '堆栈跟踪' : 'Stack Trace',
-    browserHint: lang === 'zh' ? '建议使用的浏览器：' : 'Recommended browsers:',
-    copyError: lang === 'zh' ? '复制错误信息' : 'Copy Error Info',
-    copied: lang === 'zh' ? '已复制！' : 'Copied!',
+    toggleDetails: lang === 'zh' ? '显示错误详情' : 'Show error details',
+    errorDetails: lang === 'zh' ? '错误详情' : 'Error details',
+    stackTrace: lang === 'zh' ? '堆栈跟踪' : 'Stack trace',
+    copyError: lang === 'zh' ? '复制错误信息' : 'Copy error',
+    copied: lang === 'zh' ? '已复制' : 'Copied',
   };
 };
 
-export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { hasError: false, error: null, errorInfo: null, showDetails: false };
-  }
+export const ErrorBoundary = defineComponent({
+  name: 'ErrorBoundary',
+  setup(_, { slots }) {
+    const hasError = ref(false);
+    const error = ref<Error | null>(null);
+    const errorInfo = ref('');
+    const showDetails = ref(false);
+    const copied = ref(false);
 
-  static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error, errorInfo: null, showDetails: false };
-  }
+    onErrorCaptured((capturedError, _instance, info) => {
+      const normalizedError = capturedError instanceof Error ? capturedError : new Error(String(capturedError));
+      hasError.value = true;
+      error.value = normalizedError;
+      errorInfo.value = info;
+      logger.errorFromError('ui.errorBoundary', 'Caught error', normalizedError, {
+        message: normalizedError.message,
+        componentStack: info,
+      });
+      return false;
+    });
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    logger.errorFromError('ui.errorBoundary', 'Caught error', error, { message: error.message, componentStack: errorInfo.componentStack });
-    this.setState({ error, errorInfo });
-  }
+    const copyError = async () => {
+      const errorText = [
+        `Error: ${error.value?.message || String(error.value)}`,
+        '',
+        'Stack Trace:',
+        error.value?.stack || '',
+        '',
+        'Component Stack:',
+        errorInfo.value,
+      ].join('\n');
 
-  handleReload = () => {
-    window.location.reload();
-  };
+      try {
+        await navigator.clipboard.writeText(errorText);
+        copied.value = true;
+        window.setTimeout(() => { copied.value = false; }, 1600);
+      } catch (copyErrorValue) {
+        logger.errorFromError('ui.errorBoundary', 'Failed to copy', copyErrorValue);
+      }
+    };
 
-  handleReportIssue = () => {
-    window.open(PROJECT_ISSUES_URL, '_blank');
-  };
+    return () => {
+      if (!hasError.value) return slots.default?.();
 
-  handleToggleDetails = () => {
-    this.setState(prev => ({ showDetails: !prev.showDetails }));
-  };
-
-  handleCopyError = async () => {
-    const { error, errorInfo } = this.state;
-    const errorText = [
-      'Error: ' + (error?.message || String(error)),
-      '',
-      'Stack Trace:',
-      error?.stack || '',
-      '',
-      'Component Stack:',
-      errorInfo?.componentStack || '',
-    ].join('\n');
-
-    try {
-      await navigator.clipboard.writeText(errorText);
-    } catch (e) {
-      logger.errorFromError('ui.errorBoundary', 'Failed to copy', e);
-    }
-  };
-
-  render() {
-    if (this.state.hasError) {
       const strings = getLocalizedStrings();
-      const { error, errorInfo, showDetails } = this.state;
-
       return (
-        <div className="min-h-screen bg-light-bg dark:bg-panel-dark flex items-center justify-center p-4">
-          <div className="max-w-lg w-full bg-white dark:bg-panel-dark rounded-lg shadow-lg p-6">
+        <div className="min-h-screen bg-light-bg flex items-center justify-center p-4">
+          <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-lg">
             <div className="text-center">
-              <div className="text-5xl mb-4">😵</div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-text-primary mb-2">
-                {strings.title}
-              </h1>
-              <p className="text-gray-700 dark:text-text-tertiary mb-4">
-                {strings.description}
-              </p>
-              
-              {/* 错误信息显示 */}
-              {error && (
-                <div className="mb-4 p-3 bg-gray-100 dark:bg-white/[0.04] rounded text-left">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-text-secondary ">
-                      {strings.errorDetails}
-                    </span>
-                    <button
-                      onClick={this.handleCopyError}
-                      className="text-xs px-2 py-1 bg-gray-100 dark:bg-white/[0.04] text-gray-700 dark:text-text-secondary rounded hover:bg-gray-100 dark:bg-white/[0.04] dark:hover:bg-gray-100 dark:bg-white/[0.04] transition-colors"
-                    >
-                      {strings.copyError}
+              <div className="mb-4 text-5xl">😵</div>
+              <h1 className="mb-2 text-xl font-bold text-gray-900">{strings.title}</h1>
+              <p className="mb-4 text-gray-700">{strings.description}</p>
+              {error.value ? (
+                <div className="mb-4 rounded bg-gray-100 p-3 text-left">
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-sm font-semibold text-gray-700">{strings.errorDetails}</span>
+                    <button type="button" onClick={() => void copyError()} className="rounded bg-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-300">
+                      {copied.value ? strings.copied : strings.copyError}
                     </button>
                   </div>
-                  <p className="text-sm text-gray-700 dark:text-text-secondary font-mono break-words">
-                    {error?.message || error?.toString() || String(error)}
-                  </p>
+                  <p className="break-words font-mono text-sm text-gray-700">{error.value.message}</p>
                 </div>
-              )}
-
-              {/* 详细信息折叠面板 */}
+              ) : null}
               <div className="mb-4">
-                <button
-                  onClick={this.handleToggleDetails}
-                  className="text-sm text-brand-violet dark:text-brand-violet hover:text-gray-700 dark:text-text-secondary dark:hover:text-gray-700 dark:text-text-secondary underline"
-                >
+                <button type="button" onClick={() => { showDetails.value = !showDetails.value; }} className="text-sm text-brand-violet underline">
                   {strings.toggleDetails}
                 </button>
-                {showDetails && errorInfo && (
-                  <div className="mt-2 p-3 bg-light-surface dark:bg-white/[0.04] rounded text-left overflow-auto max-h-64">
-                    <p className="text-xs font-semibold text-gray-900 dark:text-text-secondary mb-2">
-                      {strings.stackTrace}:
-                    </p>
-                    <pre className="text-xs text-gray-700 dark:text-text-tertiary font-mono whitespace-pre-wrap">
-                      {error?.stack || 'No stack trace available'}
-                    </pre>
-                    {errorInfo?.componentStack && (
-                      <>
-                        <p className="text-xs font-semibold text-gray-900 dark:text-text-secondary mt-3 mb-2">
-                          Component Stack:
-                        </p>
-                        <pre className="text-xs text-gray-700 dark:text-text-tertiary font-mono whitespace-pre-wrap">
-                          {errorInfo.componentStack}
-                        </pre>
-                      </>
-                    )}
+                {showDetails.value ? (
+                  <div className="mt-2 max-h-64 overflow-auto rounded bg-light-surface p-3 text-left">
+                    <p className="mb-2 text-xs font-semibold text-gray-900">{strings.stackTrace}</p>
+                    <pre className="whitespace-pre-wrap break-words font-mono text-xs text-gray-700">{error.value?.stack || 'No stack trace available'}</pre>
+                    {errorInfo.value ? <pre className="mt-3 whitespace-pre-wrap break-words font-mono text-xs text-gray-700">{errorInfo.value}</pre> : null}
                   </div>
-                )}
+                ) : null}
               </div>
-
-              {/* 操作按钮 */}
               <div className="space-y-2">
-                <button
-                  onClick={this.handleReload}
-                  className="w-full px-4 py-2 bg-brand-indigo text-white rounded-lg hover:bg-brand-hover transition-colors"
-                >
+                <button type="button" onClick={() => window.location.reload()} className="w-full rounded-lg bg-brand-indigo px-4 py-2 text-white hover:bg-brand-hover">
                   {strings.reload}
                 </button>
-                <button
-                  onClick={this.handleReportIssue}
-                  className="w-full px-4 py-2 bg-light-surfacetext-gray-900 dark:bg-white/[0.04] dark:text-text-secondary rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                >
+                <button type="button" onClick={() => window.open(PROJECT_ISSUES_URL, '_blank')} className="w-full rounded-lg bg-gray-100 px-4 py-2 text-gray-900 hover:bg-gray-200">
                   {strings.reportIssue}
                 </button>
-              </div>
-
-              {/* 浏览器提示 */}
-              <div className="mt-4 text-xs text-gray-500 dark:text-text-tertiary">
-                <p>{strings.browserHint}</p>
-                <p>Chrome 80+ / Firefox 75+ / Safari 13+ / Edge 80+</p>
               </div>
             </div>
           </div>
         </div>
       );
-    }
-
-    return this.props.children;
-  }
-}
+    };
+  },
+});

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import Vue, { useState, useRef, useEffect, useMemo, useCallback } from "../vue-runtime.ts";
 import { Bot, ChevronDown, Pause, Play } from '@lucide/vue';
 import { RepositoryCard } from './RepositoryCard';
 import { SimilarViewBanner } from './SimilarViewBanner';
@@ -20,7 +20,7 @@ interface RepositoryListProps {
   selectedCategory: string;
 }
 
-export const RepositoryList: React.FC<RepositoryListProps> = ({
+export const RepositoryList: Vue.FC<RepositoryListProps> = ({
   repositories,
   selectedCategory
 }) => {
@@ -573,7 +573,7 @@ export const RepositoryList: React.FC<RepositoryListProps> = ({
   }, [repositories, selectedRepoIds, updateRepository, language, toast]);
 
   // 处理单击空白处 - 触发回到顶部按钮跳跃动画
-  const handleClick = useCallback((e: React.MouseEvent) => {
+  const handleClick = useCallback((e: Vue.MouseEvent) => {
     // 检查点击的是否是空白区域（不是卡片或其他元素）
     if (showBulkToolbar && e.target === e.currentTarget) {
       // 触发自定义事件，让回到顶部按钮跳跃两下
@@ -582,7 +582,7 @@ export const RepositoryList: React.FC<RepositoryListProps> = ({
   }, [showBulkToolbar]);
 
   // 处理双击空白处退出多选模式
-  const handleDoubleClick = useCallback((e: React.MouseEvent) => {
+  const handleDoubleClick = useCallback((e: Vue.MouseEvent) => {
     // 检查点击的是否是空白区域（不是卡片或其他元素）
     if (showBulkToolbar && e.target === e.currentTarget) {
       handleDeselectAll();
@@ -998,18 +998,6 @@ export const RepositoryList: React.FC<RepositoryListProps> = ({
               )
           }
         </p>
-        {searchFilters.query && (
-          <div className="text-sm text-gray-400 dark:text-text-tertiary">
-            <p className="mb-2">
-              {language === 'zh' ? '搜索建议：' : 'Search suggestions:'}
-            </p>
-            <ul className="space-y-1">
-              <li>• {language === 'zh' ? '尝试使用不同的关键词' : 'Try different keywords'}</li>
-              <li>• {language === 'zh' ? '使用 AI 搜索进行语义匹配' : 'Use AI search for semantic matching'}</li>
-              <li>• {language === 'zh' ? '检查拼写或尝试英文/中文关键词' : 'Check spelling or try English/Chinese keywords'}</li>
-            </ul>
-          </div>
-        )}
       </div>
     );
   }
@@ -1029,8 +1017,8 @@ export const RepositoryList: React.FC<RepositoryListProps> = ({
       )}
 
       {/* Controls Bar */}
-      <div className="gsm-panel-soft flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-3.5">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+      <div className="gsm-panel-soft flex min-w-0 flex-col gap-3 p-3 sm:flex-row sm:items-start sm:justify-between sm:p-3.5">
+        <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
 
           {/* AI Analysis Dropdown Button */}
           <div className="relative">
@@ -1163,10 +1151,10 @@ export const RepositoryList: React.FC<RepositoryListProps> = ({
         </div>
 
         {/* Statistics */}
-        <div className={disableCardAnimations ? 'repository-list-syncing' : undefined}>
+        <div className={`min-w-0 max-w-full ${disableCardAnimations ? 'repository-list-syncing' : ''}`}>
           <div className="mt-0.5 text-[11px] font-medium text-slate-400 dark:text-slate-500">
-            <div className="flex items-center justify-between">
-              <div>
+            <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
+              <div className="min-w-0">
                 {t(
                   `第 ${startIndex}-${endIndex} / 共 ${filteredRepositories.length} 个仓库`,
                   `Showing ${startIndex}-${endIndex} of ${filteredRepositories.length} repositories`

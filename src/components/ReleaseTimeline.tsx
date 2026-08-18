@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import Vue, { useState, useMemo, useCallback, useEffect, useRef } from "../vue-runtime.ts";
 import { Package, Bell, Search, X, RefreshCw, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LayoutGrid, CalendarDays, ChevronDown, CheckCircle, Filter, Settings } from '@lucide/vue';
 import { Release } from '../types';
 import { useAppStore } from '../store/useAppStore';
@@ -23,7 +23,7 @@ import {
 } from '../utils/releaseSources';
 import { assetsFingerprint } from '../utils/releaseAssets';
 
-export const ReleaseTimeline: React.FC = () => {
+export const ReleaseTimeline: Vue.FC = () => {
   const {
     releases,
     repositories,
@@ -150,7 +150,7 @@ export const ReleaseTimeline: React.FC = () => {
   };
 
   // Toggle full content view
-  const toggleFullContent = (releaseId: number, e: React.MouseEvent) => {
+  const toggleFullContent = (releaseId: number, e: Vue.MouseEvent) => {
     e.stopPropagation();
     setFullContentReleases(prev => {
       const newSet = new Set(prev);

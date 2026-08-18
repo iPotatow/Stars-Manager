@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import Vue, { useMemo, useState } from "../vue-runtime.ts";
 import { LogOut, Menu, X } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 import { useDialog } from '../hooks/useDialog';
@@ -14,7 +14,7 @@ const MENU_META: Record<HeaderMenuId, { labelZh: string; labelEn: string; code: 
   settings: { labelZh: '设置', labelEn: 'Settings', code: '06' },
 };
 
-export const Header: React.FC = () => {
+export const Header: Vue.FC = () => {
   const { user, currentView, headerMenuConfig, setCurrentView, logout, language } = useAppStore();
   const { confirm } = useDialog();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,8 +28,8 @@ export const Header: React.FC = () => {
     const confirmed = await confirm(
       t('退出登录确认', 'Logout confirmation'),
       t(
-        '退出后，AI 配置和自定义分类会保留。要删除全部数据，请前往“设置 → 数据管理”。',
-        'AI configs and custom categories will be kept after logout. To delete all data, open Settings → Data Management.',
+        '退出登录？',
+        'Log out?',
       ),
       { type: 'warning' },
     );

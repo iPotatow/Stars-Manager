@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
+import Vue, { memo, useEffect, useMemo, useRef, useState } from "../vue-runtime.ts";
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js';
@@ -92,7 +92,7 @@ const renderMarkdown = (
   });
 };
 
-const MarkdownRenderer: React.FC<MarkdownRendererProps> = memo(({
+const MarkdownRenderer: Vue.FC<MarkdownRendererProps> = memo(({
   content,
   className = '',
   shouldRender = true,

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- JSX event and component boundaries are intentionally permissive. */
+
 import {
   defineComponent,
   h,
@@ -12,7 +14,10 @@ import {
   type Component as VueComponent,
   type Ref,
   type VNode,
+  type VNodeChild,
 } from 'vue';
+
+export type VueNode = VNodeChild;
 
 type Cleanup = (() => void) | void;
 type EffectSlot = {
@@ -26,7 +31,7 @@ type StateSlot = { value: Ref<unknown>; setter: (next: unknown | ((previous: unk
 
 type ExternalStore = { subscribe: (listener: () => void) => () => void };
 
-interface CompatContext {
+interface VueRenderContext {
   cursor: number;
   states: StateSlot[];
   refs: Ref<unknown>[];
@@ -37,21 +42,21 @@ interface CompatContext {
   cleanups: Array<() => void>;
 }
 
-let activeContext: CompatContext | null = null;
+let activeContext: VueRenderContext | null = null;
 
 const sameDeps = (previous: unknown[] | undefined, next: unknown[] | undefined): boolean => {
   if (!previous || !next || previous.length !== next.length) return false;
   return previous.every((value, index) => Object.is(value, next[index]));
 };
 
-const currentHookContext = (): CompatContext => {
+const currentVueContext = (): VueRenderContext => {
   if (!activeContext) {
-    throw new Error('Vue compatibility hooks must be called from a rendered component.');
+      throw new Error('Vue component hooks must be called from a rendered component.');
   }
   return activeContext;
 };
 
-const scheduleEffects = (context: CompatContext): void => {
+const scheduleEffects = (context: VueRenderContext): void => {
   void nextTick(() => {
     context.effects.forEach((slot) => {
       if (!slot.pending) return;
@@ -66,13 +71,13 @@ const scheduleEffects = (context: CompatContext): void => {
   });
 };
 
-const createCompatComponent = (
+const createVueComponent = (
   renderFunction: (props: Record<string, unknown>, forwardedRef?: Ref<unknown>) => unknown,
   forwardedRef = false,
 ): VueComponent => defineComponent({
   inheritAttrs: false,
   setup(props, { attrs, expose, slots }) {
-    const context: CompatContext = {
+    const context: VueRenderContext = {
       cursor: 0,
       states: [],
       refs: [],
@@ -99,7 +104,7 @@ const createCompatComponent = (
     }
 
     const render = () => {
-      // Reading the invalidation ref makes every Zustand-backed component reactive in Vue.
+      // Reading the invalidation ref makes every store-backed component reactive in Vue.
       void context.invalidate.value;
       context.cursor = 0;
       const previousContext = activeContext;
@@ -124,7 +129,7 @@ const createCompatComponent = (
 });
 
 export const useState = <T>(initial: T | (() => T)): [T, (next: T | ((previous: T) => T)) => void] => {
-  const context = currentHookContext();
+  const context = currentVueContext();
   const index = context.cursor++;
   if (!context.states[index]) {
     const value = shallowRef(typeof initial === 'function' ? (initial as () => T)() : initial) as Ref<unknown>;
@@ -144,24 +149,27 @@ export const useState = <T>(initial: T | (() => T)): [T, (next: T | ((previous: 
   return [slot.value.value as T, slot.setter as (next: T | ((previous: T) => T)) => void];
 };
 
-export const useRef = <T>(initial: T): Ref<T> & { current: T } => {
-  const context = currentHookContext();
+export function useRef<T>(): Ref<T | undefined> & { current: T | undefined };
+export function useRef<T>(initial: T): Ref<T> & { current: T };
+export function useRef<T>(initial: T | null): Ref<T> & { current: T };
+export function useRef<T>(initial: T | null = null): Ref<T | null> & { current: T | null } {
+  const context = currentVueContext();
   const index = context.cursor++;
   if (!context.refs[index]) {
-    const value = shallowRef(initial) as unknown as Ref<T> & { current: T };
+    const value = shallowRef(initial) as unknown as Ref<T | null> & { current: T | null };
     Object.defineProperty(value, 'current', {
       configurable: true,
       enumerable: true,
       get: () => value.value,
-      set: (next: T) => { value.value = next; },
+      set: (next: T | null) => { value.value = next; },
     });
     context.refs[index] = value as Ref<unknown>;
   }
-  return context.refs[index] as Ref<T> & { current: T };
-};
+  return context.refs[index] as Ref<T | null> & { current: T | null };
+}
 
 export const useMemo = <T>(factory: () => T, deps: unknown[]): T => {
-  const context = currentHookContext();
+  const context = currentVueContext();
   const index = context.cursor++;
   const previous = context.memos[index];
   if (!previous || !sameDeps(previous.deps, deps)) {
@@ -173,7 +181,7 @@ export const useMemo = <T>(factory: () => T, deps: unknown[]): T => {
 export const useCallback = <T extends (...args: never[]) => unknown>(callback: T, deps: unknown[]): T => useMemo(() => callback, deps);
 
 export const useEffect = (effect: () => Cleanup, deps?: unknown[]): void => {
-  const context = currentHookContext();
+  const context = currentVueContext();
   const index = context.cursor++;
   const previous = context.effects[index];
   if (!previous || deps === undefined || !sameDeps(previous.deps, deps)) {
@@ -190,7 +198,8 @@ export const useLayoutEffect = useEffect;
 
 export const useId = (): string => vueUseId();
 
-export const useImperativeHandle = <T>(target: Ref<unknown> & { current?: unknown } | undefined, factory: () => T): void => {
+export const useImperativeHandle = <T>(target: Ref<unknown> & { current?: unknown } | undefined, factory: () => T, deps?: unknown[]): void => {
+  void deps;
   const value = factory();
   if (target) target.current = value;
 };
@@ -206,7 +215,7 @@ export const registerExternalStore = (store: ExternalStore): void => {
 };
 
 export const createContext = <T>(defaultValue: T) => {
-  const key = Symbol('vue-react-context');
+  const key = Symbol('vue-context');
   const Provider = defineComponent({
     inheritAttrs: false,
     props: { value: { type: null as unknown as undefined, default: defaultValue } },
@@ -220,15 +229,19 @@ export const createContext = <T>(defaultValue: T) => {
 
 export const useContext = <T>(context: { key: symbol; defaultValue: T }): T => inject(context.key, context.defaultValue) as T;
 
-export const memo = (component: unknown): VueComponent => {
-  if (typeof component !== 'function') return component as VueComponent;
-  return createCompatComponent(component as (props: Record<string, unknown>) => unknown);
-};
+export function memo<P = Record<string, unknown>>(
+  component: (props: P) => unknown,
+  compare?: (previous: P, next: P) => boolean,
+): Vue.FC<P> {
+  void compare;
+  if (typeof component !== 'function') return component as unknown as Vue.FC<P>;
+  return createVueComponent(component as (props: Record<string, unknown>) => unknown) as unknown as Vue.FC<P>;
+}
 
-export const forwardRef = <T, P>(renderFunction: (props: P, ref: Ref<T>) => unknown): VueComponent => createCompatComponent(
+export const forwardRef = <T, P>(renderFunction: (props: P, ref: Ref<T | null>) => unknown): Vue.FC<P> => createVueComponent(
   (props, forwardedRef) => renderFunction(props as P, forwardedRef as Ref<T>),
   true,
-);
+  ) as unknown as Vue.FC<P>;
 
 export const createElement = (type: unknown, props: Record<string, unknown> | null, ...children: unknown[]) => h(
   type as VueComponent,
@@ -245,7 +258,14 @@ export const Children = {
 
 export const Component = defineComponent;
 
-const React = {
+/**
+ * Small Vue JSX runtime used by the migrated TSX components.
+ *
+ * The application is rendered by Vue. This object only groups the Vue-backed
+ * helpers that the existing JSX components use while they are being moved to
+ * native Vue composition patterns.
+ */
+export const Vue = {
   memo,
   createElement,
   cloneElement,
@@ -261,4 +281,23 @@ const React = {
   useImperativeHandle,
 };
 
-export default React;
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace Vue {
+  export type Node = import('vue').VNodeChild;
+  export type FC<P = Record<string, unknown>> = ((props: P) => any) & { displayName?: string };
+  export type ComponentType<P = Record<string, unknown>> = FC<P> & any;
+  export type ElementType = any;
+  export type RefObject<T> = { current: T | null };
+  export type MouseEvent<T extends Element = Element> = globalThis.MouseEvent & { currentTarget: T | null | any };
+  export type KeyboardEvent<T extends Element = Element> = globalThis.KeyboardEvent & { target: any; currentTarget: T | null | any; nativeEvent: globalThis.KeyboardEvent };
+  export type ChangeEvent<T extends Element = Element> = globalThis.Event & { target: any; currentTarget: T | null | any };
+  export type CompositionEvent<T extends Element = Element> = globalThis.CompositionEvent & { target: any; currentTarget: T | null | any };
+  export type DragEvent<T extends Element = Element> = globalThis.DragEvent & { currentTarget: T | null | any; dataTransfer: any };
+  export type TouchEvent<T extends Element = Element> = globalThis.TouchEvent & { currentTarget: T | null | any };
+  export type FocusEvent<T extends Element = Element> = globalThis.FocusEvent & { target: any; currentTarget: T | null | any };
+  export type WheelEvent<T extends Element = Element> = globalThis.WheelEvent & { target: any; currentTarget: T | null | any };
+  export type ButtonHTMLAttributes<T extends Element = HTMLButtonElement> = Record<string, any> & { currentTarget?: T; onClick?: any; disabled?: boolean };
+  export interface ErrorInfo { componentStack: string; }
+}
+
+export default Vue;

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '../vue-testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ReadmeModal } from './ReadmeModal';
 import { backend } from '../services/backendAdapter';
@@ -7,9 +7,9 @@ import { useAppStore } from '../store/useAppStore';
 import type { Repository } from '../types';
 
 vi.mock('./BilingualMarkdownRenderer', async () => {
-  const React = await import('react');
+  const VueRuntime = await import('../vue-runtime');
   return {
-    default: React.forwardRef(({ markdown }: { markdown: string }, ref) => {
+    default: VueRuntime.forwardRef(({ markdown }: { markdown: string }, ref) => {
       void ref;
       return <div>{markdown}</div>;
     }),

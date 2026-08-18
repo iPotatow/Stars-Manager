@@ -1,8 +1,8 @@
-import React from 'react';
+import Vue from "../vue-runtime.ts";
 import { RefreshCw, Loader2, TrendingUp, Rocket, Crown, Tag, Search } from '@lucide/vue';
 import type { DiscoveryChannel, DiscoveryChannelId, DiscoveryChannelIcon } from '../types';
 
-const discoveryChannelIconMap: Record<DiscoveryChannelIcon, React.ReactNode> = {
+const discoveryChannelIconMap: Record<DiscoveryChannelIcon, Vue.Node> = {
   trending: <TrendingUp className="w-4 h-4 text-gray-700 dark:text-text-secondary" />,
   rocket: <Rocket className="w-4 h-4 text-gray-700 dark:text-text-secondary" />,
   star: <Crown className="w-4 h-4 text-gray-700 dark:text-text-secondary" />,
@@ -21,7 +21,7 @@ interface DiscoverySidebarProps {
   language: 'zh' | 'en';
 }
 
-export const DiscoverySidebar: React.FC<DiscoverySidebarProps> = ({
+export const DiscoverySidebar: Vue.FC<DiscoverySidebarProps> = ({
   channels,
   selectedChannel,
   onChannelSelect,

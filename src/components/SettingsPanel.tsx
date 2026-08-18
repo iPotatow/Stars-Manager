@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import Vue, { useState, useRef, useEffect, useCallback } from "../vue-runtime.ts";
 import {
   Settings,
   Globe,
@@ -26,7 +26,7 @@ type SettingsTab = 'general' | 'ai' | 'category' | 'menu' | 'data' | 'vectorSear
 interface SettingsTabItem {
   id: SettingsTab;
   label: string;
-  icon: React.ReactNode;
+  icon: Vue.Node;
 }
 
 interface SettingsPanelProps {
@@ -42,7 +42,7 @@ interface MobileTabNavProps {
   onTabChange: (tab: SettingsTab) => void;
 }
 
-const MobileTabNav: React.FC<MobileTabNavProps> = ({ tabs, activeTab, onTabChange }) => {
+const MobileTabNav: Vue.FC<MobileTabNavProps> = ({ tabs, activeTab, onTabChange }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<SettingsTab, HTMLButtonElement>>(new Map());
   const [indicatorStyle, setIndicatorStyle] = useState({ translateX: 0, width: 0 });
@@ -146,7 +146,7 @@ const MobileTabNav: React.FC<MobileTabNavProps> = ({ tabs, activeTab, onTabChang
           <button
             key={tab.id}
             ref={(el) => {
-              if (el) tabRefs.current.set(tab.id, el);
+              if (el) tabRefs.current.set(tab.id, el as HTMLButtonElement);
             }}
             onClick={() => onTabChange(tab.id)}
             role="tab"
@@ -188,7 +188,7 @@ const MobileTabNav: React.FC<MobileTabNavProps> = ({ tabs, activeTab, onTabChang
   );
 };
 
-export const SettingsPanel: React.FC<SettingsPanelProps> = ({ 
+export const SettingsPanel: Vue.FC<SettingsPanelProps> = ({
   isOpen = true, 
   onClose,
   isModal = false 

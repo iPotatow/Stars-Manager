@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import Vue, { useState, useCallback } from "../../vue-runtime.ts";
 import {
   Search,
   Eye,
@@ -48,7 +48,7 @@ const DEFAULT_DIMENSIONS: Record<EmbeddingApiType, number> = {
   ollama: 768,
 };
 
-export const VectorSearchSettings: React.FC<VectorSearchSettingsProps> = ({ t }) => {
+export const VectorSearchSettings: Vue.FC<VectorSearchSettingsProps> = ({ t }) => {
   const {
     embeddingConfigs,
     activeEmbeddingConfig,
@@ -100,7 +100,7 @@ export const VectorSearchSettings: React.FC<VectorSearchSettingsProps> = ({ t })
   const [abortController, setAbortController] = useState<AbortController | null>(null);
 
   // Sync form state when active config changes
-  React.useEffect(() => {
+  Vue.useEffect(() => {
     if (activeConfig) {
       setFormApiType(activeConfig.apiType);
       setFormBaseUrl(activeConfig.baseUrl);

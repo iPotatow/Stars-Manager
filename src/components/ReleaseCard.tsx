@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useRef, useState, useEffect } from 'react';
+import Vue, { memo, useCallback, useRef, useState, useEffect } from "../vue-runtime.ts";
 import { ExternalLink, GitBranch, Calendar, Download, ChevronDown, ChevronUp, BookOpen, ArrowUpRight, FolderOpen, Folder, BellOff, FileArchive, Code2, Loader2, Sparkles } from '@lucide/vue';
 import { Release } from '../types';
 import { formatDistanceToNow } from 'date-fns';
@@ -33,14 +33,14 @@ interface ReleaseCardProps {
   selectedFilters: string[];
   onToggleAssets: () => void;
   onToggleReleaseNotes: () => void;
-  onToggleFullContent: (e: React.MouseEvent) => void;
+  onToggleFullContent: (e: Vue.MouseEvent) => void;
   onUnsubscribe: () => void;
   onMarkAsRead: () => void;
   language: 'zh' | 'en';
   formatFileSize: (bytes: number) => string;
 }
 
-const ReleaseCard: React.FC<ReleaseCardProps> = memo(({
+const ReleaseCard: Vue.FC<ReleaseCardProps> = memo(({
   release,
   downloadLinks,
   isUnread,
@@ -126,7 +126,7 @@ const ReleaseCard: React.FC<ReleaseCardProps> = memo(({
     }
   }, [activeConfig, language, release, toast]);
 
-  const handleToggleSummary = useCallback(async (e: React.MouseEvent) => {
+  const handleToggleSummary = useCallback(async (e: Vue.MouseEvent) => {
     e.stopPropagation();
 
     // 已展开时：一律收起（出错态也先收起，再次点击已收起的错误态才会重试）

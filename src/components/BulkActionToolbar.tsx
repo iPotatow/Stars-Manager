@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import Vue, { useState, useRef } from "../vue-runtime.ts";
 import { X, Star, FolderOpen, Bot, Bell, BellOff, CheckSquare, Square, Loader2, Lock, Unlock, RotateCcw } from '@lucide/vue';
 import { Repository } from '../types';
 import { useAppStore } from '../store/useAppStore';
@@ -20,7 +20,7 @@ interface TooltipState {
   y: number;
 }
 
-export const BulkActionToolbar: React.FC<BulkActionToolbarProps> = ({
+export const BulkActionToolbar: Vue.FC<BulkActionToolbarProps> = ({
   selectedCount,
   repositories,
   onSelectAll,
@@ -41,7 +41,7 @@ export const BulkActionToolbar: React.FC<BulkActionToolbarProps> = ({
   const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // 处理可见性变化，播放动画后再卸载
-  React.useEffect(() => {
+  Vue.useEffect(() => {
     if (isVisible) {
       setShouldRender(true);
       setIsClosing(false);
@@ -55,7 +55,7 @@ export const BulkActionToolbar: React.FC<BulkActionToolbarProps> = ({
   }, [isVisible]);
 
   // 清理 shake timeout 和 confirm timeout on unmount
-  React.useEffect(() => {
+  Vue.useEffect(() => {
     return () => {
       if (shakeTimeoutRef.current) {
         clearTimeout(shakeTimeoutRef.current);
@@ -80,7 +80,7 @@ export const BulkActionToolbar: React.FC<BulkActionToolbarProps> = ({
     }, 500);
   };
 
-  const handleAction = async (action: string, e?: React.MouseEvent) => {
+  const handleAction = async (action: string, e?: Vue.MouseEvent) => {
     if (showConfirm === action) {
       setIsProcessing(true);
       if (confirmTimeoutRef.current) {
@@ -154,7 +154,7 @@ export const BulkActionToolbar: React.FC<BulkActionToolbarProps> = ({
   };
 
   // 处理点击工具栏背景（非按钮区域）
-  const handleToolbarClick = (e: React.MouseEvent) => {
+  const handleToolbarClick = (e: Vue.MouseEvent) => {
     // 如果点击的是工具栏背景本身（不是按钮），触发抖动提示
     if (e.target === e.currentTarget) {
       triggerShake();

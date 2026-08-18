@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import Vue, { useState, useCallback, useMemo, useRef, useEffect } from "../../vue-runtime.ts";
 import { Bot, Plus, Edit3, Trash2, Save, X, TestTube, RefreshCw, MessageSquare, Eye, EyeOff, AlertCircle } from '@lucide/vue';
 import { AIConfig, AIApiType, AIReasoningEffort, MiMoPlan } from '../../types';
 import { useAppStore } from '../../store/useAppStore';
@@ -72,7 +72,7 @@ function getEndpointHelpText(apiType: AIApiType, t: (zh: string, en: string) => 
   }
 }
 
-export const AIConfigPanel: React.FC<AIConfigPanelProps> = ({ t }) => {
+export const AIConfigPanel: Vue.FC<AIConfigPanelProps> = ({ t }) => {
   const {
     aiConfigs,
     activeAIConfig,

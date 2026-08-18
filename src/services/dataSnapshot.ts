@@ -14,7 +14,7 @@ import type {
 /**
  * Stable, app-owned interchange format for local data transfer.
  *
- * This is intentionally separate from the Zustand persistence shape and from
+ * This is intentionally separate from the Vue store persistence shape and from
  * any upstream project's export format. Secrets are represented by the
  * caller's masked config values and are never enabled by a snapshot flag.
  */

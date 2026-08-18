@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback, useState } from 'react';
+import Vue, { useEffect, useMemo, useCallback, useState } from "./vue-runtime.ts";
 import { LoginScreen } from './components/LoginScreen';
 import { Header } from './components/Header';
 import { SearchBar } from './components/SearchBar';
@@ -43,7 +43,7 @@ function hasActiveSearchFilters(filters: SearchFilters): boolean {
  * Main repository view combining category sidebar, search bar, and repository list.
  * Switches between search results and full list based on active search filters.
  */
-const RepositoriesView = React.memo(({
+const RepositoriesView = Vue.memo(({
   repositories,
   searchResults,
   searchFilters,
@@ -91,19 +91,19 @@ const RepositoriesView = React.memo(({
 });
 RepositoriesView.displayName = 'RepositoriesView';
 
-const ReleasesView = React.memo(() => <ReleaseTimeline />);
+const ReleasesView = Vue.memo(() => <ReleaseTimeline />);
 ReleasesView.displayName = 'ReleasesView';
 
-const GistsView = React.memo(() => <GistView />);
+const GistsView = Vue.memo(() => <GistView />);
 GistsView.displayName = 'GistsView';
 
-const ForksView = React.memo(() => <ForkTimeline />);
+const ForksView = Vue.memo(() => <ForkTimeline />);
 ForksView.displayName = 'ForksView';
 
-const DiscoveryViewRoute = React.memo(() => <DiscoveryView />);
+const DiscoveryViewRoute = Vue.memo(() => <DiscoveryView />);
 DiscoveryViewRoute.displayName = 'DiscoveryViewRoute';
 
-const SettingsView = React.memo(() => <SettingsPanel />);
+const SettingsView = Vue.memo(() => <SettingsPanel />);
 SettingsView.displayName = 'SettingsView';
 
 const VIEW_LABELS: Record<AppState['currentView'], { zh: string; en: string }> = {
@@ -115,7 +115,7 @@ const VIEW_LABELS: Record<AppState['currentView'], { zh: string; en: string }> =
   settings: { zh: '设置', en: 'Settings' },
 };
 
-const App: React.FC = () => {
+const App: Vue.FC = () => {
   const [runtimeReady, setRuntimeReady] = useState(false);
   const {
     user,
@@ -255,8 +255,8 @@ const App: React.FC = () => {
       <div className="signal-app min-h-screen text-slate-950 lg:pl-[248px]">
       <Header />
       <main className="mx-auto w-full max-w-[1720px] px-3 py-4 sm:px-5 sm:py-6 xl:px-8 xl:py-7">
-        <div className="signal-page-heading mb-5 flex min-h-12 items-end justify-between gap-4 px-1 sm:mb-7">
-          <div>
+        <div className="signal-page-heading mb-5 flex min-h-12 min-w-0 flex-wrap items-end justify-between gap-4 px-1 sm:mb-7">
+          <div className="min-w-0 flex-1">
             <div className="signal-page-kicker">{language === 'zh' ? '资料库 / 当前视图' : 'LIBRARY / CURRENT VIEW'}</div>
             <h1 className="text-[1.75rem] font-bold leading-none tracking-[-0.035em] text-slate-950 sm:text-[2rem]">
               {language === 'zh' ? VIEW_LABELS[currentView].zh : VIEW_LABELS[currentView].en}
@@ -267,7 +267,7 @@ const App: React.FC = () => {
                 : (language === 'zh' ? 'Stars / Index 工作区' : 'Stars / Index workspace')}
             </p>
           </div>
-          <div className="signal-sync-status hidden items-center gap-2 sm:flex">
+          <div className="signal-sync-status hidden max-w-full shrink-0 flex-wrap items-center gap-2 sm:flex">
             <span className="signal-status-dot" />
             <span className="signal-sync-label">{language === 'zh' ? '同步状态' : 'SYNC STATUS'}</span>
             {lastSync

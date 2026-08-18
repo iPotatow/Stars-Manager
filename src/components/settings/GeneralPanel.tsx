@@ -1,4 +1,4 @@
-import React from 'react';
+import Vue from "../../vue-runtime.ts";
 import { Globe, Package } from '@lucide/vue';
 import { useAppStore } from '../../store/useAppStore';
 
@@ -6,7 +6,7 @@ interface GeneralPanelProps {
   t: (zh: string, en: string) => string;
 }
 
-export const GeneralPanel: React.FC<GeneralPanelProps> = ({ t }) => {
+export const GeneralPanel: Vue.FC<GeneralPanelProps> = ({ t }) => {
   const { language, setLanguage } = useAppStore();
 
   return (

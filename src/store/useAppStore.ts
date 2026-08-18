@@ -1,5 +1,4 @@
-import { create } from 'zustand';
-import { persist, PersistStorage, StorageValue } from 'zustand/middleware';
+import { createPersistedVueStore, type PersistStorage, type StorageValue } from './vueStore';
 import {
   AppState,
   Gist,
@@ -50,7 +49,7 @@ import {
 } from '../utils/releaseSources';
 import { logger } from '../services/logger';
 import { PRESET_FILTERS } from '../constants/presetFilters';
-import { registerExternalStore } from '../vue-compat';
+import { registerExternalStore } from '../vue-runtime';
 import {
   defaultCategories,
   translateCategoryName,
@@ -939,8 +938,7 @@ const defaultDiscoveryChannels: DiscoveryChannel[] = [
   { id: 'search', name: '搜索发现', nameEn: 'Search', icon: 'search', description: '自定义搜索发现新项目', enabled: true },
 ];
 
-const zustandAppStore = create<AppState & AppActions>()(
-  persist(
+const vueAppStore = createPersistedVueStore<AppState & AppActions>(
     (set) => ({
       // Initial state
       user: null,
@@ -2107,23 +2105,27 @@ const zustandAppStore = create<AppState & AppActions>()(
         };
       },
     }
-  )
 );
 
-// Vue components use the same store API as the previous React UI. The
-// compatibility wrapper subscribes the currently-rendering Vue component to
-// Zustand while preserving getState/setState/subscribe for services and tests.
+// Vue components use the same store API across the application. The wrapper
+// subscribes the currently-rendering Vue component while preserving the
+// getState/setState/subscribe surface used by services and tests.
+type AppStoreHook = typeof vueAppStore & {
+  (): AppState & AppActions;
+  <T>(selector: (state: AppState & AppActions) => T): T;
+};
+
 export const useAppStore = Object.assign(
   ((selector?: (state: AppState & AppActions) => unknown) => {
-    registerExternalStore(zustandAppStore);
-    const state = zustandAppStore.getState();
+    registerExternalStore(vueAppStore);
+    const state = vueAppStore.getState();
     return selector ? selector(state) : state;
-  }) as typeof zustandAppStore,
+  }) as AppStoreHook,
   {
-    getState: zustandAppStore.getState,
-    setState: zustandAppStore.setState,
-    subscribe: zustandAppStore.subscribe,
-    destroy: zustandAppStore.destroy,
+    getState: vueAppStore.getState,
+    setState: vueAppStore.setState,
+    subscribe: vueAppStore.subscribe,
+    destroy: vueAppStore.destroy,
   },
 );
 

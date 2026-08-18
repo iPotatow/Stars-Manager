@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import Vue, { useMemo, useState, useEffect, useCallback, useRef } from "../vue-runtime.ts";
 import {
   Plus,
   Edit3,
@@ -29,7 +29,7 @@ interface CategorySidebarProps {
   onCategorySelect: (category: string) => void;
 }
 
-const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+const CATEGORY_ICONS: Record<string, Vue.ComponentType<{ className?: string }>> = {
   all: FolderKanban,
   ai: Bot,
   development: Code2,
@@ -46,7 +46,7 @@ const CategoryGlyph = ({ id, className = 'h-4 w-4' }: { id: string; className?: 
   return <Icon className={className} />;
 };
 
-export const CategorySidebar: React.FC<CategorySidebarProps> = ({
+export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
   repositories,
   selectedCategory,
   onCategorySelect
@@ -282,7 +282,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
     );
   };
 
-  const handleDropOnCategory = async (event: React.DragEvent<HTMLDivElement>, category: Category) => {
+  const handleDropOnCategory = async (event: Vue.DragEvent<HTMLDivElement>, category: Category) => {
     event.preventDefault();
     setDragOverCategoryId(null);
 
@@ -388,7 +388,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
                           ? 'bg-gray-100 dark:bg-white/[0.04] text-status-emerald ring-1 ring-status-emerald dark:bg-status-emerald/10 dark:text-status-emerald dark:ring-status-emerald/30'
                           : 'text-slate-500 hover:bg-slate-900/[0.045] hover:text-slate-950 dark:text-slate-400 dark:hover:bg-white/[0.055] dark:hover:text-white'
                     }`}
-                    title={category.id !== 'all' ? category.name + " — " + t('可将仓库卡片拖到这里快速改分类', 'Drag repository cards here to quickly change category') : undefined}
+                    title={category.name}
                     aria-pressed={isSelected}
                     aria-current={isSelected ? 'page' : undefined}
                   >
@@ -483,7 +483,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
                                   ? 'bg-gray-100 dark:bg-white/[0.04] text-status-emerald ring-1 ring-status-emerald dark:bg-status-emerald/10 dark:text-status-emerald dark:ring-status-emerald/30'
                                   : 'text-slate-400 hover:bg-slate-900/[0.045] hover:text-slate-950 dark:text-slate-500 dark:hover:bg-white/[0.055] dark:hover:text-white'
                             }`}
-                            title={category.id !== 'all' ? category.name + " — " + t('可将仓库卡片拖到这里快速改分类', 'Drag repository cards here to quickly change category') : category.name}
+                            title={category.name}
                             aria-label={category.name}
                           >
                             <CategoryGlyph id={category.id} className="h-4 w-4" />
@@ -577,7 +577,7 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
                                 ? 'bg-green-50 text-status-emerald ring-1 ring-status-emerald dark:bg-status-emerald/10 dark:text-status-emerald dark:ring-status-emerald/30'
                                 : 'text-slate-500 hover:bg-slate-900/[0.045] hover:text-slate-950 dark:text-slate-400 dark:hover:bg-white/[0.055] dark:hover:text-white'
                           } ${showText ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3'}`}
-                          title={category.id !== 'all' ? category.name + " — " + t('可将仓库卡片拖到这里快速改分类', 'Drag repository cards here to quickly change category') : undefined}
+                          title={category.name}
                         >
                           <div className="flex items-center space-x-3 min-w-0 flex-1">
                             <CategoryGlyph id={category.id} className="h-4 w-4 shrink-0" />

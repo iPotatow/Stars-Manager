@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import Vue, { useEffect, useState, useCallback, useRef, useMemo } from "../vue-runtime.ts";
 import { X, Loader2, AlertCircle, FileText, ExternalLink, List, Type, ArrowUp, Languages, Eye } from '@lucide/vue';
 import BilingualMarkdownRenderer, { DisplayMode, BilingualMarkdownRendererHandle, TranslationStatus } from './BilingualMarkdownRenderer';
 import { stripMarkdownFormatting } from '../utils/markdownUtils';
@@ -37,7 +37,7 @@ const isAbortError = (error: unknown, signal?: AbortSignal): boolean => {
   return Boolean(signal?.aborted || (error as { name?: string })?.name === 'AbortError');
 };
 
-export const ReadmeModal: React.FC<ReadmeModalProps> = ({
+export const ReadmeModal: Vue.FC<ReadmeModalProps> = ({
   isOpen,
   onClose,
   repository
@@ -274,7 +274,7 @@ export const ReadmeModal: React.FC<ReadmeModalProps> = ({
     setFontSizeIndex((prev) => (prev + 1) % FONT_SIZES.length);
   }, []);
 
-  const handleResizeMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleResizeMouseDown = useCallback((e: Vue.MouseEvent) => {
     e.preventDefault();
     isResizingRef.current = true;
     startXRef.current = e.clientX;
@@ -461,7 +461,7 @@ export const ReadmeModal: React.FC<ReadmeModalProps> = ({
     await fetchReadmeContent(currentVariant);
   }, [readmeVariants, selectedReadmeKey, defaultReadmeVariant, fetchReadmeContent]);
 
-  const handleReadmeVariantChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleReadmeVariantChange = useCallback((event: Vue.ChangeEvent<HTMLSelectElement>) => {
     const nextKey = event.target.value;
     if (nextKey === selectedReadmeKey) return;
 
@@ -588,7 +588,7 @@ export const ReadmeModal: React.FC<ReadmeModalProps> = ({
 
   if (!isOpen || !repository) return null;
 
-  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleBackdropClick = (event: Vue.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
       onClose();
     }

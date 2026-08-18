@@ -1,4 +1,4 @@
-import React from 'react';
+import Vue from "../vue-runtime.ts";
 import { RotateCcw, Search } from '@lucide/vue';
 
 interface SimilarViewBannerProps {
@@ -10,7 +10,7 @@ interface SimilarViewBannerProps {
 /**
  * 相似仓库视图顶部横幅：展示当前锚点仓库名，并提供"重置"按钮回到查找相似之前的状态。
  */
-export const SimilarViewBanner: React.FC<SimilarViewBannerProps> = ({
+export const SimilarViewBanner: Vue.FC<SimilarViewBannerProps> = ({
   anchorRepoName,
   onReset,
   language,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import Vue, { useState, useEffect, useMemo, useRef, useCallback } from "../vue-runtime.ts";
 import { Save, X, Plus, Lock, Unlock, RotateCcw, Bot, Edit3, FileText, Tag, FolderOpen, Info, AlertTriangle } from '@lucide/vue';
 import { Modal } from './Modal';
 import { Repository } from '../types';
@@ -49,7 +49,7 @@ interface SourceInfo {
   category: DataSource;
 }
 
-export const RepositoryEditModal: React.FC<RepositoryEditModalProps> = ({
+export const RepositoryEditModal: Vue.FC<RepositoryEditModalProps> = ({
   isOpen,
   onClose,
   repository
@@ -421,7 +421,7 @@ export const RepositoryEditModal: React.FC<RepositoryEditModalProps> = ({
     setEditIntent(prev => ({ ...prev, tags: 'keep-custom' }));
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: Vue.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       handleAddTag();

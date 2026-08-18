@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import Vue, { useCallback } from "../../vue-runtime.ts";
 
 interface SliderInputProps {
   value: number;
@@ -12,7 +12,7 @@ interface SliderInputProps {
   showMarks?: boolean;
 }
 
-export const SliderInput: React.FC<SliderInputProps> = ({
+export const SliderInput: Vue.FC<SliderInputProps> = ({
   value,
   onChange,
   min,
@@ -24,7 +24,7 @@ export const SliderInput: React.FC<SliderInputProps> = ({
 }) => {
   const isInteger = step % 1 === 0;
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((e: Vue.ChangeEvent<HTMLInputElement>) => {
     const newValue = isInteger ? parseInt(e.target.value, 10) : parseFloat(e.target.value);
     if (!isNaN(newValue)) onChange(newValue);
   }, [onChange, isInteger]);

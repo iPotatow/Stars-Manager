@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import Vue, { useState } from "../vue-runtime.ts";
 import { Info } from '@lucide/vue';
 import type { DiscoveryChannelId } from '../types';
 
@@ -7,7 +7,7 @@ interface SortAlgorithmTooltipProps {
   language: 'zh' | 'en';
 }
 
-export const SortAlgorithmTooltip: React.FC<SortAlgorithmTooltipProps> = ({ channelId, language }) => {
+export const SortAlgorithmTooltip: Vue.FC<SortAlgorithmTooltipProps> = ({ channelId, language }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   const t = (zh: string, en: string) => language === 'zh' ? zh : en;

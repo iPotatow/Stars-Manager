@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import Vue, { useState } from "../vue-runtime.ts";
 import { AlertCircle, ArrowRight, Key, UserRound } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 import { createGitHubApiService } from '../services/githubApiFactory';
@@ -7,7 +7,7 @@ import { safeReadText } from '../utils/clipboardUtils';
 
 type LoginStep = 'credentials' | 'github';
 
-export const LoginScreen: React.FC = () => {
+export const LoginScreen: Vue.FC = () => {
   const [step, setStep] = useState<LoginStep>(() => (
     backend.isSessionAuthenticated ? 'github' : 'credentials'
   ));
@@ -79,7 +79,7 @@ export const LoginScreen: React.FC = () => {
     }
   };
 
-  const handleKeyPress = async (event: React.KeyboardEvent<HTMLInputElement>, action: 'login' | 'github') => {
+  const handleKeyPress = async (event: Vue.KeyboardEvent<HTMLInputElement>, action: 'login' | 'github') => {
     if (event.key === 'Enter' && !isLoading) {
       if (action === 'login') {
         void handleLogin();
@@ -117,8 +117,6 @@ export const LoginScreen: React.FC = () => {
         <section className="signal-login-intro">
           <div className="signal-intro-blocks" aria-hidden="true"><span /><span /><span /></div>
           <h1>{language === 'zh' ? <>管理你的 GitHub<br />收藏。</> : <>Manage your GitHub<br />stars.</>}</h1>
-          <p>{t('搜索、整理并继续查看你的 GitHub 收藏。', 'Search, organize, and return to your GitHub stars.')}</p>
-          <div className="signal-login-index"><span>01 / SIGN IN</span><span>02 / CONNECT</span><span>03 / ORGANIZE</span></div>
         </section>
 
         <section className="signal-login-panel">
@@ -126,8 +124,8 @@ export const LoginScreen: React.FC = () => {
           <h2>{step === 'credentials' ? t('登录 Stars Manager', 'Sign in to Stars Manager') : t('连接 GitHub', 'Connect GitHub')}</h2>
           <p className="signal-panel-description">
             {step === 'credentials'
-              ? t('使用部署者在 Cloudflare Variables & Secrets 中配置的账号登录。', 'Sign in with the credentials configured by the deployer in Cloudflare Variables & Secrets.')
-              : t('登录成功。GitHub token 会先验证，再加密保存到 D1。', 'Signed in. The GitHub token will be validated and encrypted into D1.')}
+              ? t('输入工作区账号。', 'Enter your workspace credentials.')
+              : t('输入 GitHub token。', 'Enter your GitHub token.')}
           </p>
 
           {repositories.length > 0 && lastSync ? (
@@ -208,17 +206,14 @@ export const LoginScreen: React.FC = () => {
                 {isLoading ? <><span className="signal-spinner" />{t('连接中…', 'Connecting…')}</> : <>{t('连接到 GitHub', 'Connect to GitHub')}<ArrowRight aria-hidden="true" /></>}
               </button>
 
-              <div className="signal-token-help">
-                <div className="signal-help-title"><span>03</span><h3>{t('准备访问令牌', 'Prepare your access token')}</h3></div>
-                <ol>
-                  <li>{t('打开 GitHub Settings → Developer settings', 'Open GitHub Settings → Developer settings')}</li>
-                  <li>{t('创建 classic token', 'Create a classic token')}</li>
-                  <li>{t('启用 repo、user 和 gist 权限', 'Enable repo, user, and gist scopes')}</li>
-                </ol>
-                <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer">
-                  {t('前往 GitHub 创建令牌', 'Create a token on GitHub')} <ArrowRight aria-hidden="true" />
-                </a>
-              </div>
+              <a
+                href="https://github.com/settings/tokens"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700"
+              >
+                {t('没有 token？去 GitHub 创建', 'Need a token? Create one on GitHub')} <ArrowRight aria-hidden="true" />
+              </a>
             </>
           )}
         </section>

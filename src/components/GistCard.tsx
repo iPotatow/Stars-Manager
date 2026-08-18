@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import Vue, { useMemo, useState } from "../vue-runtime.ts";
 import { Bot, Clock, Copy, Edit3, ExternalLink, FileCode2, Loader2, StarOff, Trash2, User } from '@lucide/vue';
 import type { Gist } from '../types';
 import { createGitHubApiService } from '../services/githubApiFactory';
@@ -17,7 +17,7 @@ interface GistCardProps {
   onUnstarred: (gistId: string) => void;
 }
 
-export const GistCard: React.FC<GistCardProps> = ({
+export const GistCard: Vue.FC<GistCardProps> = ({
   gist,
   isMine,
   onOpen,
@@ -49,13 +49,13 @@ export const GistCard: React.FC<GistCardProps> = ({
     [gist.files]
   );
 
-  const handleCopyLink = async (event: React.MouseEvent) => {
+  const handleCopyLink = async (event: Vue.MouseEvent) => {
     event.stopPropagation();
     const result = await safeWriteText(gist.html_url);
     toast(result.success ? t('链接已复制', 'Link copied') : (result.error || t('复制失败', 'Copy failed')), result.success ? 'success' : 'error');
   };
 
-  const handleAnalyze = async (event: React.MouseEvent) => {
+  const handleAnalyze = async (event: Vue.MouseEvent) => {
     event.stopPropagation();
     if (!githubToken) {
       toast(t('GitHub token 未找到，请重新登录。', 'GitHub token not found. Please login again.'), 'error');
@@ -109,7 +109,7 @@ export const GistCard: React.FC<GistCardProps> = ({
     }
   };
 
-  const handleUnstar = async (event: React.MouseEvent) => {
+  const handleUnstar = async (event: Vue.MouseEvent) => {
     event.stopPropagation();
     if (!githubToken) return;
     const confirmed = await confirm(
@@ -132,7 +132,7 @@ export const GistCard: React.FC<GistCardProps> = ({
     }
   };
 
-  const handleDelete = async (event: React.MouseEvent) => {
+  const handleDelete = async (event: Vue.MouseEvent) => {
     event.stopPropagation();
     if (!isMine) return;
     const confirmed = await confirm(t('删除 Gist', 'Delete Gist'), t('确定要删除这个 gist 吗？此操作不可撤销。', 'Delete this gist? This cannot be undone.'), { type: 'danger', confirmText: t('删除', 'Delete') });

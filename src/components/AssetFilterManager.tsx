@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import Vue, { useState, useMemo } from "../vue-runtime.ts";
 import { Plus, Edit3, Trash2, Filter, ChevronDown, ChevronUp, X, Monitor, Apple, Smartphone, Package, Terminal, RotateCcw } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 import { FilterModal } from './FilterModal';
@@ -7,7 +7,7 @@ import { PRESET_FILTERS } from '../constants/presetFilters';
 import { useDialog } from '../hooks/useDialog';
 
 // 图标映射
-const ICON_MAP: Record<string, React.ElementType> = {
+const ICON_MAP: Record<string, Vue.ElementType> = {
   Monitor,
   Apple,
   Smartphone,
@@ -37,7 +37,7 @@ interface AssetFilterManagerProps {
   onClearFilters: () => void;
 }
 
-export const AssetFilterManager: React.FC<AssetFilterManagerProps> = ({
+export const AssetFilterManager: Vue.FC<AssetFilterManagerProps> = ({
   selectedFilters,
   onFilterToggle,
   onClearFilters
@@ -47,7 +47,7 @@ export const AssetFilterManager: React.FC<AssetFilterManagerProps> = ({
   const { toast, confirm } = useDialog();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingFilter, setEditingFilter] = useState<AssetFilter | undefined>();
+  const [editingFilter, setEditingFilter] = useState<AssetFilter | undefined>(undefined);
   const [isExpanded, setIsExpanded] = useState(false);
 
   // 归一化 assetFilters：匹配预设标识的项设为 isPreset=true

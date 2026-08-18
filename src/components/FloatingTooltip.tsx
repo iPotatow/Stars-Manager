@@ -1,10 +1,10 @@
-import React, { useLayoutEffect, useRef, useCallback, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import Vue, { useLayoutEffect, useRef, useCallback, useEffect } from "../vue-runtime.ts";
+import { createPortal } from "../vue-dom.ts";
 
 interface FloatingTooltipProps {
-  content: React.ReactNode;
+  content: Vue.Node;
   visible: boolean;
-  triggerRef: React.RefObject<HTMLElement | null>;
+  triggerRef: Vue.RefObject<HTMLElement | null>;
   onMouseLeave: () => void;
   onMouseEnter?: () => void;
 }
@@ -20,7 +20,7 @@ function isPointerNear(el: HTMLElement | null, x: number, y: number, padding: nu
   );
 }
 
-export const FloatingTooltip: React.FC<FloatingTooltipProps> = ({
+export const FloatingTooltip: Vue.FC<FloatingTooltipProps> = ({
   content,
   visible,
   triggerRef,

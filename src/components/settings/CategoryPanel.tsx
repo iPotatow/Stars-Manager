@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import Vue, { useState, useMemo, useRef, useCallback } from "../../vue-runtime.ts";
 import { Package, Plus, Trash2, Edit3, Save, X, Eye, EyeOff, GripVertical, ArrowUp, ArrowDown, ArrowUpToLine, ArrowDownToLine, LayoutGrid } from '@lucide/vue';
 import { useAppStore, getAllCategories, sortCategoriesByOrder } from '../../store/useAppStore';
 import { StepperInput } from '../ui/StepperInput';
@@ -8,7 +8,7 @@ interface CategoryPanelProps {
   t: (zh: string, en: string) => string;
 }
 
-export const CategoryPanel: React.FC<CategoryPanelProps> = ({ t }) => {
+export const CategoryPanel: Vue.FC<CategoryPanelProps> = ({ t }) => {
   const customCategories = useAppStore(state => state.customCategories);
   const hiddenDefaultCategoryIds = useAppStore(state => state.hiddenDefaultCategoryIds);
   const defaultCategoryOverrides = useAppStore(state => state.defaultCategoryOverrides);
@@ -204,7 +204,7 @@ export const CategoryPanel: React.FC<CategoryPanelProps> = ({ t }) => {
   };
 
   // 拖拽开始
-  const handleDragStart = useCallback((e: React.DragEvent, index: number, categoryId: string) => {
+  const handleDragStart = useCallback((e: Vue.DragEvent, index: number, categoryId: string) => {
     dragItemIndex.current = index;
     setDraggingId(categoryId);
     e.dataTransfer.effectAllowed = 'move';
@@ -216,7 +216,7 @@ export const CategoryPanel: React.FC<CategoryPanelProps> = ({ t }) => {
   }, []);
 
   // 拖拽结束
-  const handleDragEnd = useCallback((e: React.DragEvent) => {
+  const handleDragEnd = useCallback((e: Vue.DragEvent) => {
     setDraggingId(null);
     setDragOverId(null);
     dragItemIndex.current = null;
@@ -226,7 +226,7 @@ export const CategoryPanel: React.FC<CategoryPanelProps> = ({ t }) => {
   }, []);
 
   // 拖拽经过
-  const handleDragOver = useCallback((e: React.DragEvent, categoryId: string) => {
+  const handleDragOver = useCallback((e: Vue.DragEvent, categoryId: string) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     setDragOverId(categoryId);
@@ -238,7 +238,7 @@ export const CategoryPanel: React.FC<CategoryPanelProps> = ({ t }) => {
   }, []);
 
   // 放置
-  const handleDrop = useCallback((e: React.DragEvent, dropIndex: number) => {
+  const handleDrop = useCallback((e: Vue.DragEvent, dropIndex: number) => {
     e.preventDefault();
     setDragOverId(null);
 

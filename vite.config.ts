@@ -1,14 +1,10 @@
 import { defineConfig } from 'vite';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import legacy from '@vitejs/plugin-legacy';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
-const projectRoot = path.dirname(fileURLToPath(import.meta.url));
-
-const wrapReactFunctionComponents = {
-  name: 'wrap-react-components-for-vue',
+const wrapVueFunctionComponents = {
+  name: 'wrap-vue-jsx-components',
   enforce: 'pre' as const,
   transform(code: string, id: string) {
     if (!id.includes('/src/') || !id.endsWith('.tsx') || id.includes('.test.')) return null;
@@ -20,8 +16,8 @@ const wrapReactFunctionComponents = {
           const declaredType = node.type.getText(sourceFile);
           const initializer = node.initializer;
           const alreadyWrapped = ts.isCallExpression(initializer)
-            && (initializer.expression.getText(sourceFile) === 'memo' || initializer.expression.getText(sourceFile) === 'React.memo');
-          const isFunctionComponent = /^React\.FC(?:<|$)/.test(declaredType)
+            && (initializer.expression.getText(sourceFile) === 'memo' || initializer.expression.getText(sourceFile) === 'Vue.memo');
+          const isFunctionComponent = /^Vue\.FC(?:<|$)/.test(declaredType)
             && (ts.isArrowFunction(initializer) || ts.isFunctionExpression(initializer));
 
           if (isFunctionComponent && !alreadyWrapped) {
@@ -31,7 +27,7 @@ const wrapReactFunctionComponents = {
               node.exclamationToken,
               node.type,
               context.factory.createCallExpression(
-                context.factory.createPropertyAccessExpression(context.factory.createIdentifier('React'), 'memo'),
+                context.factory.createPropertyAccessExpression(context.factory.createIdentifier('Vue'), 'memo'),
                 undefined,
                 [initializer],
               ),
@@ -51,7 +47,7 @@ const wrapReactFunctionComponents = {
 export default defineConfig({
   base: '/',
   plugins: [
-    wrapReactFunctionComponents,
+    wrapVueFunctionComponents,
     vueJsx(),
     legacy({
       targets: ['defaults', 'not IE 11', 'Chrome >= 60', 'Firefox >= 60', 'Safari >= 12', 'Edge >= 79'],
@@ -62,18 +58,6 @@ export default defineConfig({
       renderLegacyChunks: false,
     }),
   ],
-  resolve: {
-    alias: [{
-      find: /^react$/,
-      replacement: path.resolve(projectRoot, 'src/vue-compat.ts'),
-    }, {
-      find: /^react-dom$/,
-      replacement: path.resolve(projectRoot, 'src/vue-dom-compat.ts'),
-    }, {
-      find: /^@testing-library\/react$/,
-      replacement: path.resolve(projectRoot, 'src/vue-testing-library-compat.ts'),
-    }],
-  },
   build: {
     // The app intentionally ships as a single-screen SPA with legacy browser support.
     // Keep the warning threshold aligned with the current split chunks so Vite still

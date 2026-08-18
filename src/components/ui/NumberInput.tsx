@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import Vue, { useCallback, useRef } from "../../vue-runtime.ts";
 
 interface NumberInputProps {
   value: number | undefined;
@@ -14,7 +14,7 @@ interface NumberInputProps {
 const INVALID_KEYS_INTEGER = new Set(['e', 'E', '+', '.']);
 const INVALID_KEYS_FLOAT = new Set(['e', 'E', '+']);
 
-export const NumberInput: React.FC<NumberInputProps> = ({
+export const NumberInput: Vue.FC<NumberInputProps> = ({
   value,
   onChange,
   min,
@@ -27,7 +27,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const isInteger = step % 1 === 0;
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = useCallback((e: Vue.KeyboardEvent<HTMLInputElement>) => {
     const invalidKeys = isInteger ? INVALID_KEYS_INTEGER : INVALID_KEYS_FLOAT;
     if (invalidKeys.has(e.key)) {
       e.preventDefault();
@@ -44,7 +44,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
     return 0;
   }, [allowUndefined, min]);
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((e: Vue.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
     if (raw === '') {
       onChange(resolveFallback());
@@ -62,7 +62,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
     onChange(clamped);
   }, [onChange, min, max, resolveFallback, isInteger]);
 
-  const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+  const handleBlur = useCallback((e: Vue.FocusEvent<HTMLInputElement>) => {
     const raw = e.target.value;
     if (raw === '' || raw === '-') {
       onChange(resolveFallback());
@@ -77,7 +77,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
     onChange(clamped);
   }, [onChange, min, max, resolveFallback, isInteger]);
 
-  const handleWheel = useCallback((e: React.WheelEvent<HTMLInputElement>) => {
+  const handleWheel = useCallback((e: Vue.WheelEvent<HTMLInputElement>) => {
     e.preventDefault();
     (e.target as HTMLInputElement).blur();
   }, []);

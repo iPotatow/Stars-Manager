@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import Vue, { useEffect, useRef } from "../../vue-runtime.ts";
+import { createPortal } from "../../vue-dom.ts";
 import { CheckCircle, AlertCircle, Info, AlertTriangle, X } from '@lucide/vue';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
@@ -32,7 +32,7 @@ const iconColorMap = {
   warning: 'text-amber-500 dark:text-amber-400',
 };
 
-export const Toast: React.FC<ToastProps> = ({ message, type, onClose, duration = 3000 }) => {
+export const Toast: Vue.FC<ToastProps> = ({ message, type, onClose, duration = 3000 }) => {
   const previousActiveElement = useRef<HTMLElement | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onCloseRef = useRef(onClose);

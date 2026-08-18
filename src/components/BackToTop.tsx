@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import Vue, { useState, useEffect, useCallback, useRef } from "../vue-runtime.ts";
 import { ArrowUp } from '@lucide/vue';
 import { useAppStore } from '../store/useAppStore';
 
-export const BackToTop: React.FC = () => {
+export const BackToTop: Vue.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isBouncing, setIsBouncing] = useState(false);
   const language = useAppStore(state => state.language);

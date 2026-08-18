@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Vue, { useCallback, useEffect, useMemo, useState } from "../../vue-runtime.ts";
 import {
   Cable,
   CheckCircle,
@@ -17,7 +17,7 @@ interface McpSettingsPanelProps {
   t: (zh: string, en: string) => string;
 }
 
-export const McpSettingsPanel: React.FC<McpSettingsPanelProps> = ({ t }) => {
+export const McpSettingsPanel: Vue.FC<McpSettingsPanelProps> = ({ t }) => {
   const { mcpConfig, setMcpConfig } = useAppStore();
   const { toast, confirm } = useDialog();
 

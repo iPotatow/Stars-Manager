@@ -459,7 +459,7 @@ export async function forceSyncToBackend(): Promise<boolean> {
 }
 
 /**
- * Subscribe to Zustand store changes and auto-push to backend with 2s debounce.
+ * Subscribe to the Vue store and auto-push to backend with 2s debounce.
  * Returns an unsubscribe function for cleanup.
  */
 export function startAutoSync(): () => void {

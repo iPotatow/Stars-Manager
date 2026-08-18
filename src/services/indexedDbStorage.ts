@@ -1,4 +1,4 @@
-import type { StateStorage } from 'zustand/middleware';
+import type { RawStorage } from '../store/vueStore';
 
 // Keep the IndexedDB database name stable so existing browser data remains available.
 export const DB_NAME = 'github-stars-manager-db';
@@ -140,14 +140,14 @@ const idbDelete = async (key: string): Promise<void> => {
 };
 
 /**
- * IndexedDB-backed Zustand persist storage with seamless migration:
+ * IndexedDB-backed Vue store persistence with seamless migration:
  * - First read from IndexedDB
  * - If empty, migrate an existing localStorage snapshot to IndexedDB and then remove it
  * - Normal writes go to IndexedDB and clear any legacy localStorage snapshot.
  * - localStorage is only kept as the current snapshot when IndexedDB is unavailable or a write fails.
  *   This avoids stale fallback rollbacks while preserving persistence in constrained environments.
  */
-export const indexedDBStorage: StateStorage = {
+export const indexedDBStorage: RawStorage = {
   getItem: async (name: string): Promise<string | null> => {
     if (typeof window === 'undefined') return null;
 

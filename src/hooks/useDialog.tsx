@@ -1,4 +1,5 @@
-import React, { useState, useCallback, createContext, useContext, ReactNode, useMemo, useRef } from 'react';
+import Vue, { useState, useCallback, createContext, useContext, VueNode, useMemo, useRef } from "../vue-runtime.ts";
+import { h } from 'vue';
 import { Toast, ToastType } from '../components/ui/Toast';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 
@@ -37,10 +38,10 @@ export const useDialog = (): DialogContextValue => {
 };
 
 interface DialogProviderProps {
-  children: ReactNode;
+  children: VueNode;
 }
 
-export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
+export const DialogProvider: Vue.FC<DialogProviderProps> = ({ children }) => {
   const [toastState, setToastState] = useState<ToastState | null>(null);
   const [confirmState, setConfirmState] = useState<ConfirmState>({
     isOpen: false,
@@ -105,8 +106,8 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
   }), [toast, confirm]);
 
   return (
-    <DialogContext.Provider value={value}>
-      {children}
+    <>
+      {h(DialogContext.Provider, { value }, () => children)}
       {toastState && (
         <Toast
           key={toastState.key}
@@ -125,6 +126,6 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
         onConfirm={handleConfirm}
         onCancel={handleCancel}
       />
-    </DialogContext.Provider>
+    </>
   );
 };

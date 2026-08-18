@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import Vue, { useCallback, useRef } from "../../vue-runtime.ts";
 import { Minus, Plus } from '@lucide/vue';
 
 interface StepperInputProps {
@@ -10,7 +10,7 @@ interface StepperInputProps {
   className?: string;
 }
 
-export const StepperInput: React.FC<StepperInputProps> = ({
+export const StepperInput: Vue.FC<StepperInputProps> = ({
   value,
   onChange,
   min,

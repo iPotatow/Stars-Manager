@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import Vue, { useState, useEffect } from "../vue-runtime.ts";
 import { Save, X, Plus } from '@lucide/vue';
 import { Modal } from './Modal';
 import { Category } from '../types';
@@ -787,7 +787,7 @@ interface CategoryEditModalProps {
   isCreating?: boolean;
 }
 
-export const CategoryEditModal: React.FC<CategoryEditModalProps> = ({
+export const CategoryEditModal: Vue.FC<CategoryEditModalProps> = ({
   isOpen,
   onClose,
   category,
@@ -801,7 +801,7 @@ export const CategoryEditModal: React.FC<CategoryEditModalProps> = ({
   const isDefaultCategoryModified = category && !category.isCustom && category.id in defaultCategoryOverrides;
   const originalCategory = category && !category.isCustom ? originalDefaultCategories.find(c => c.id === category.id) : null;
   
-  const effectiveCategory = React.useMemo(() => {
+  const effectiveCategory = Vue.useMemo(() => {
     if (!category || isCreating) return null;
     if (category.isCustom) {
       return customCategories.find(c => c.id === category.id) || category;

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '../vue-testing';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 
 vi.mock('../store/useAppStore', () => ({

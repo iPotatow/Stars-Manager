@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import Vue, { useState, useEffect } from "../vue-runtime.ts";
 import { X, Plus } from '@lucide/vue';
 import { Modal } from './Modal';
 import { AssetFilter } from '../types';
@@ -10,7 +10,7 @@ interface FilterModalProps {
   onSave: (filter: AssetFilter) => void;
 }
 
-export const FilterModal: React.FC<FilterModalProps> = ({
+export const FilterModal: Vue.FC<FilterModalProps> = ({
   isOpen,
   onClose,
   filter,
@@ -58,7 +58,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
     onClose();
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: Vue.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       handleAddKeyword();

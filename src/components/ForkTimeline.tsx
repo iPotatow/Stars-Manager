@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import Vue, { useState, useMemo, useCallback, useEffect } from "../vue-runtime.ts";
 import { Package, Search, X, RefreshCw, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Loader2 } from '@lucide/vue';
 import { ForkRepo, GitHubOrganization, WorkflowDefinition } from '../types';
 import { useAppStore } from '../store/useAppStore';
@@ -9,7 +9,7 @@ import ForkCard from './ForkCard';
 import { useDialog } from '../hooks/useDialog';
 import { Modal } from './Modal';
 
-export const ForkTimeline: React.FC = () => {
+export const ForkTimeline: Vue.FC = () => {
   const {
     user,
     forks,
