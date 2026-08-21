@@ -1,6 +1,15 @@
-import Vue, { useEffect, useRef, useId } from "../../vue-runtime.ts";
-import { createPortal } from "../../vue-dom.ts";
+import Vue from "../../vue-runtime.ts";
 import { AlertTriangle } from '@lucide/vue';
+import { Button } from './button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from './dialog';
+import { cn } from '../../lib/utils';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -22,118 +31,41 @@ export const ConfirmDialog: Vue.FC<ConfirmDialogProps> = ({
   onConfirm,
   onCancel,
   type = 'warning',
-}) => {
-  const previousActiveElement = useRef<HTMLElement | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const cancelButtonRef = useRef<HTMLButtonElement>(null);
-  const onCancelRef = useRef(onCancel);
-  onCancelRef.current = onCancel;
-  const titleId = useId();
-
-  useEffect(() => {
-    if (isOpen) {
-      previousActiveElement.current = document.activeElement as HTMLElement;
-      document.body.style.overflow = 'hidden';
-
-      setTimeout(() => {
-        cancelButtonRef.current?.focus();
-      }, 0);
-    } else {
-      document.body.style.overflow = '';
-      previousActiveElement.current?.focus();
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isOpen]);
-
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen) {
-        onCancelRef.current();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  const handleConfirm = () => {
-    onConfirm();
-  };
-
-  const handleCancel = () => {
-    onCancel();
-  };
-
-  const buttonClass = type === 'danger'
-    ? 'bg-status-red hover:bg-status-red/90 dark:bg-status-red/80 dark:hover:bg-status-red'
-    : 'bg-brand-indigo hover:bg-brand-hover dark:bg-brand-indigo dark:hover:bg-brand-hover';
-
-  const dialogContent = (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center"
-    >
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/50"
-        onClick={onCancel}
-      />
-
-      {/* Dialog */}
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        className="relative mx-4 w-full max-w-md rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_36px_110px_rgba(15,23,42,0.28)] dark:border-white/[0.08] dark:bg-[#101827]"
-      >
-        <div className="p-6">
-          <div className="flex items-start space-x-4">
-            <div className={`flex-shrink-0 p-2 rounded-full ${
-              type === 'danger' ? 'bg-status-red/10' : 'bg-brand-indigo/10'
-            }`}>
-              <AlertTriangle className={`w-6 h-6 ${
-                type === 'danger' ? 'text-status-red' : 'text-brand-indigo dark:text-brand-indigo'
-              }`} />
-            </div>
-            <div className="flex-1">
-              <h3 id={titleId} className="text-lg font-semibold text-gray-900 dark:text-text-primary">
-                {title}
-              </h3>
-              <p className="mt-2 text-sm text-gray-600 dark:text-text-secondary">
-                {message}
-              </p>
-            </div>
+}) => (
+  <Dialog
+    open={isOpen}
+    onUpdate:open={(open: boolean) => {
+      if (!open) onCancel();
+    }}
+  >
+    <DialogContent class="max-w-md rounded-2xl p-0">
+      <DialogHeader class="p-6 pb-2">
+        <div className="flex items-start gap-4">
+          <div className={cn(
+            'flex size-10 shrink-0 items-center justify-center rounded-full',
+            type === 'danger' ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary',
+          )}>
+            <AlertTriangle className="size-5" aria-hidden="true" />
+          </div>
+          <div className="min-w-0 space-y-2">
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription>{message}</DialogDescription>
           </div>
         </div>
+      </DialogHeader>
 
-        <div className="flex justify-end space-x-3 px-6 py-4 bg-light-bg dark:bg-white/[0.02] border-t border-black/[0.06] dark:border-white/[0.04] rounded-b-xl">
-          <button
-            ref={cancelButtonRef}
-            onClick={handleCancel}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-text-primary bg-white dark:bg-panel-dark border border-black/[0.06] dark:border-white/[0.08] rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.08] transition-colors"
-          >
-            {cancelText}
-          </button>
-          <button
-            onClick={handleConfirm}
-            className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors ${buttonClass}`}
-          >
-            {confirmText}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
-  return createPortal(dialogContent, document.body);
-};
+      <DialogFooter class="px-6 py-4">
+        <Button type="button" variant="outline" onClick={onCancel}>
+          {cancelText}
+        </Button>
+        <Button
+          type="button"
+          variant={type === 'danger' ? 'destructive' : 'default'}
+          onClick={onConfirm}
+        >
+          {confirmText}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+);

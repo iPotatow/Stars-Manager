@@ -1,7 +1,12 @@
 import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import legacy from '@vitejs/plugin-legacy';
 import ts from 'typescript';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 
 const wrapVueFunctionComponents = {
   name: 'wrap-vue-jsx-components',
@@ -46,8 +51,14 @@ const wrapVueFunctionComponents = {
 
 export default defineConfig({
   base: '/',
+  resolve: {
+    alias: {
+      '@': path.resolve(projectRoot, './src'),
+    },
+  },
   plugins: [
     wrapVueFunctionComponents,
+    vue(),
     vueJsx(),
     legacy({
       targets: ['defaults', 'not IE 11', 'Chrome >= 60', 'Firefox >= 60', 'Safari >= 12', 'Edge >= 79'],

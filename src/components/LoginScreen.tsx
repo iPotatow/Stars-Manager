@@ -1,5 +1,12 @@
 import Vue, { useState } from "../vue-runtime.ts";
 import { AlertCircle, ArrowRight, Key, UserRound } from '@lucide/vue';
+import { Alert, AlertDescription } from '../components/ui/alert';
+import { Badge } from '../components/ui/badge';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Spinner } from '../components/ui/spinner';
 import { useAppStore } from '../store/useAppStore';
 import { createGitHubApiService } from '../services/githubApiFactory';
 import { backend } from '../services/backendAdapter';
@@ -105,9 +112,9 @@ export const LoginScreen: Vue.FC = () => {
           <span className="flex items-center gap-1.5 text-[11px] font-semibold text-[#6e6e73] max-[760px]:hidden"><i className="h-[7px] w-[7px] rounded-full bg-[#34c759] shadow-[0_0_0_3px_rgba(52,199,89,.13)]" /> {t('Cloudflare', 'CLOUDFLARE')}</span>
           <div className="flex rounded-[9px] bg-black/[0.055] p-0.5" aria-label={t('语言', 'Language')}>
             {(['zh', 'en'] as const).map((locale) => (
-              <button key={locale} type="button" onClick={() => setLanguage(locale)} className={`min-w-[35px] rounded-[7px] px-2 py-1.5 text-xs font-medium text-[#6e6e73] transition-[background-color,color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0071e3]/30 ${language === locale ? 'bg-white text-[#1d1d1f] shadow-[0_1px_4px_rgba(0,0,0,.12)]' : ''}`}>
+              <Button key={locale} type="button" variant={language === locale ? 'secondary' : 'ghost'} size="sm" onClick={() => setLanguage(locale)} class="min-w-[35px] rounded-[7px] px-2 py-1.5 text-xs font-medium">
                 {locale === 'zh' ? '中文' : 'EN'}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -119,14 +126,18 @@ export const LoginScreen: Vue.FC = () => {
           <h1 className="mb-6 text-[clamp(44px,5.5vw,72px)] font-bold leading-[1.02] tracking-[-0.055em] text-[#1d1d1f] max-[760px]:text-[clamp(42px,12vw,60px)] max-[760px]:break-words">{language === 'zh' ? <>管理你的 GitHub<br />收藏。</> : <>Manage your GitHub<br />stars.</>}</h1>
         </section>
 
-        <section className="animate-material-in rounded-[18px] border border-black/[0.16] bg-white/[0.78] p-[28px_clamp(24px,3vw,34px)_30px] shadow-[0_18px_48px_rgba(0,0,0,.08),0_2px_8px_rgba(0,0,0,.04)] backdrop-blur-2xl backdrop-saturate-150 max-[760px]:w-full max-[760px]:rounded-2xl max-[760px]:px-5 max-[760px]:pb-[26px] max-[760px]:pt-6">
-          <div className="flex items-center justify-between text-[11px] font-semibold text-[#86868b]"><span className="rounded-md bg-[#0071e3]/10 px-[7px] py-1 text-[#0071e3]">{step === 'credentials' ? '01' : '02'}</span><span>{step === 'credentials' ? t('验证工作区', 'VERIFY WORKSPACE') : t('连接资料源', 'CONNECT SOURCE')}</span></div>
-          <h2 className="mb-[9px] mt-[18px] text-[30px] font-semibold leading-[1.12] tracking-[-0.035em] text-[#1d1d1f]">{step === 'credentials' ? t('登录 Stars Manager', 'Sign in to Stars Manager') : t('连接 GitHub', 'Connect GitHub')}</h2>
-          <p className="text-sm leading-[1.55] text-[#6e6e73] max-[760px]:break-words">
+        <Card class="animate-material-in w-full rounded-[18px] border-black/[0.16] bg-white/[0.78] py-0 shadow-[0_18px_48px_rgba(0,0,0,.08),0_2px_8px_rgba(0,0,0,.04)] backdrop-blur-2xl backdrop-saturate-150 max-[760px]:rounded-2xl">
+          <CardHeader class="px-[clamp(24px,3vw,34px)] pb-0 pt-7 max-[760px]:px-5 max-[760px]:pt-6">
+            <div className="flex items-center justify-between text-[11px] font-semibold text-[#86868b]"><Badge variant="secondary" class="rounded-md bg-[#0071e3]/10 px-[7px] py-1 text-[#0071e3] hover:bg-[#0071e3]/10">{step === 'credentials' ? '01' : '02'}</Badge><span>{step === 'credentials' ? t('验证工作区', 'VERIFY WORKSPACE') : t('连接资料源', 'CONNECT SOURCE')}</span></div>
+            <CardTitle class="mt-[18px] text-[30px] font-semibold leading-[1.12] tracking-[-0.035em] text-[#1d1d1f]">{step === 'credentials' ? t('登录 Stars Manager', 'Sign in to Stars Manager') : t('连接 GitHub', 'Connect GitHub')}</CardTitle>
+            <CardDescription class="text-sm leading-[1.55] text-[#6e6e73] max-[760px]:break-words">
             {step === 'credentials'
               ? t('输入工作区账号。', 'Enter your workspace credentials.')
               : t('输入 GitHub token。', 'Enter your GitHub token.')}
-          </p>
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent class="px-[clamp(24px,3vw,34px)] pb-[30px] pt-6 max-[760px]:px-5 max-[760px]:pb-[26px]">
 
           {repositories.length > 0 && lastSync ? (
             <div className="mb-5 flex flex-wrap items-center gap-2 rounded-lg border-l-[3px] border-[#34c759] bg-[#34c759]/[0.08] px-3 py-[11px] text-sm text-[#1d1d1f]" role="status">
@@ -138,44 +149,44 @@ export const LoginScreen: Vue.FC = () => {
 
           {step === 'credentials' ? (
             <>
-              <label htmlFor="workspace-username" className="mb-[7px] block text-xs text-[#6e6e73]">Workspace username</label>
-              <div className="group flex min-h-12 items-center gap-2.5 rounded-[10px] border border-black/[0.12] bg-white/[0.74] px-3 transition-[background-color,border-color,box-shadow] duration-200 focus-within:border-[#0071e3]/65 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#0071e3]/10">
-                <UserRound className="h-4 w-4 text-[#86868b]" aria-hidden="true" />
-                <input
+              <Label htmlFor="workspace-username" class="mb-[7px] text-xs text-[#6e6e73]">Workspace username</Label>
+              <div className="relative">
+                <UserRound className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-[#86868b]" aria-hidden="true" />
+                <Input
                   id="workspace-username"
                   type="text"
                   placeholder="ADMIN_USER"
-                  value={username}
-                  onInput={(event) => { setUsername(event.target.value); setError(''); }}
-                  onKeyDown={(event) => void handleKeyPress(event, 'login')}
+                  modelValue={username}
+                  onUpdate:modelValue={(value: string | number) => { setUsername(String(value)); setError(''); }}
+                  onKeyDown={(event: Vue.KeyboardEvent<HTMLInputElement>) => void handleKeyPress(event, 'login')}
                   disabled={isLoading}
                   autoComplete="username"
                   autoFocus
-                  className="h-12 min-w-0 flex-1 border-0 bg-transparent font-mono text-[13px] text-[#1d1d1f] outline-none placeholder:text-[#86868b]"
+                  class="h-12 pl-10 font-mono text-[13px] text-[#1d1d1f] placeholder:text-[#86868b]"
                 />
               </div>
 
-              <label htmlFor="workspace-password" className="mb-[7px] mt-4 block text-xs text-[#6e6e73]">Workspace password</label>
-              <div className="group flex min-h-12 items-center gap-2.5 rounded-[10px] border border-black/[0.12] bg-white/[0.74] px-3 transition-[background-color,border-color,box-shadow] duration-200 focus-within:border-[#0071e3]/65 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#0071e3]/10">
-                <Key className="h-4 w-4 text-[#86868b]" aria-hidden="true" />
-                <input
+              <Label htmlFor="workspace-password" class="mb-[7px] mt-4 text-xs text-[#6e6e73]">Workspace password</Label>
+              <div className="relative">
+                <Key className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-[#86868b]" aria-hidden="true" />
+                <Input
                   id="workspace-password"
                   type="password"
                   placeholder="ADMIN_PASSWORD"
-                  value={password}
-                  onInput={(event) => { setPassword(event.target.value); setError(''); }}
-                  onKeyDown={(event) => void handleKeyPress(event, 'login')}
+                  modelValue={password}
+                  onUpdate:modelValue={(value: string | number) => { setPassword(String(value)); setError(''); }}
+                  onKeyDown={(event: Vue.KeyboardEvent<HTMLInputElement>) => void handleKeyPress(event, 'login')}
                   disabled={isLoading}
                   autoComplete="current-password"
-                  className="h-12 min-w-0 flex-1 border-0 bg-transparent font-mono text-[13px] text-[#1d1d1f] outline-none placeholder:text-[#86868b]"
+                  class="h-12 pl-10 font-mono text-[13px] text-[#1d1d1f] placeholder:text-[#86868b]"
                 />
               </div>
 
-              {error ? <div role="alert" className="mt-3 flex items-start gap-2 rounded-[9px] bg-[#ff3b30]/[0.09] px-3 py-2.5 text-sm leading-[1.5] text-[#c9342b]"><AlertCircle className="mt-px h-[15px] w-[15px] shrink-0" aria-hidden="true" /><p className="m-0">{error}</p></div> : null}
+              {error ? <Alert variant="destructive" class="mt-3 border-[#ff3b30]/20 bg-[#ff3b30]/[0.09] px-3 py-2.5 text-[#c9342b]"><AlertCircle class="mt-px h-[15px] w-[15px]" aria-hidden="true" /><AlertDescription class="text-[#c9342b]">{error}</AlertDescription></Alert> : null}
 
-              <button type="button" onClick={() => void handleLogin()} disabled={isLoading || !username.trim() || !password} className="mt-3.5 flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border-0 bg-[#0071e3] text-sm font-semibold text-white shadow-[0_2px_5px_rgba(0,113,227,.24)] transition-[background-color,box-shadow,transform] duration-200 hover:bg-[#0077ed] hover:shadow-[0_4px_10px_rgba(0,113,227,.27)] active:scale-[.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0071e3]/35 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:border disabled:border-[#d1d1d6] disabled:bg-[#e5e5ea] disabled:text-[#636366] disabled:shadow-none">
-                {isLoading ? <><span className="h-[15px] w-[15px] animate-spin rounded-full border-2 border-white/35 border-t-white" />{t('验证中…', 'Verifying…')}</> : <>{t('登录工作区', 'Sign in')}<ArrowRight className="h-4 w-4" aria-hidden="true" /></>}
-              </button>
+              <Button type="button" onClick={() => void handleLogin()} disabled={isLoading || !username.trim() || !password} class="mt-3.5 min-h-12 w-full rounded-[10px] bg-[#0071e3] text-sm font-semibold text-white shadow-[0_2px_5px_rgba(0,113,227,.24)] hover:bg-[#0077ed] hover:shadow-[0_4px_10px_rgba(0,113,227,.27)] disabled:border-[#d1d1d6] disabled:bg-[#e5e5ea] disabled:text-[#636366] disabled:shadow-none">
+                {isLoading ? <><Spinner class="size-4 text-white" />{t('验证中…', 'Verifying…')}</> : <>{t('登录工作区', 'Sign in')}<ArrowRight data-icon="inline-end" aria-hidden="true" /></>}
+              </Button>
             </>
           ) : (
             <>
@@ -186,28 +197,28 @@ export const LoginScreen: Vue.FC = () => {
                 </div>
               ) : null}
 
-              <label htmlFor="github-token" className="mb-[7px] block text-xs text-[#6e6e73]">GitHub Personal Access Token</label>
-              <div className="group flex min-h-12 items-center gap-2.5 rounded-[10px] border border-black/[0.12] bg-white/[0.74] px-3 transition-[background-color,border-color,box-shadow] duration-200 focus-within:border-[#0071e3]/65 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#0071e3]/10">
-                <Key className="h-4 w-4 text-[#86868b]" aria-hidden="true" />
-                <input
+              <Label htmlFor="github-token" class="mb-[7px] text-xs text-[#6e6e73]">GitHub Personal Access Token</Label>
+              <div className="relative">
+                <Key className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-[#86868b]" aria-hidden="true" />
+                <Input
                   id="github-token"
                   type="password"
                   placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                  value={token}
-                  onInput={(event) => { setToken(event.target.value); setError(''); }}
-                  onKeyDown={(event) => void handleKeyPress(event, 'github')}
+                  modelValue={token}
+                  onUpdate:modelValue={(value: string | number) => { setToken(String(value)); setError(''); }}
+                  onKeyDown={(event: Vue.KeyboardEvent<HTMLInputElement>) => void handleKeyPress(event, 'github')}
                   disabled={isLoading}
                   autoComplete="off"
                   autoFocus
-                  className="h-12 min-w-0 flex-1 border-0 bg-transparent font-mono text-[13px] text-[#1d1d1f] outline-none placeholder:text-[#86868b]"
+                  class="h-12 pl-10 font-mono text-[13px] text-[#1d1d1f] placeholder:text-[#86868b]"
                 />
               </div>
 
-              {error ? <div role="alert" className="mt-3 flex items-start gap-2 rounded-[9px] bg-[#ff3b30]/[0.09] px-3 py-2.5 text-sm leading-[1.5] text-[#c9342b]"><AlertCircle className="mt-px h-[15px] w-[15px] shrink-0" aria-hidden="true" /><p className="m-0">{error}</p></div> : null}
+              {error ? <Alert variant="destructive" class="mt-3 border-[#ff3b30]/20 bg-[#ff3b30]/[0.09] px-3 py-2.5 text-[#c9342b]"><AlertCircle class="mt-px h-[15px] w-[15px]" aria-hidden="true" /><AlertDescription class="text-[#c9342b]">{error}</AlertDescription></Alert> : null}
 
-              <button type="button" onClick={() => void handleConnectGitHub()} disabled={isLoading || !token.trim()} className="mt-3.5 flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border-0 bg-[#0071e3] text-sm font-semibold text-white shadow-[0_2px_5px_rgba(0,113,227,.24)] transition-[background-color,box-shadow,transform] duration-200 hover:bg-[#0077ed] hover:shadow-[0_4px_10px_rgba(0,113,227,.27)] active:scale-[.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0071e3]/35 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:border disabled:border-[#d1d1d6] disabled:bg-[#e5e5ea] disabled:text-[#636366] disabled:shadow-none">
-                {isLoading ? <><span className="h-[15px] w-[15px] animate-spin rounded-full border-2 border-white/35 border-t-white" />{t('连接中…', 'Connecting…')}</> : <>{t('连接到 GitHub', 'Connect to GitHub')}<ArrowRight className="h-4 w-4" aria-hidden="true" /></>}
-              </button>
+              <Button type="button" onClick={() => void handleConnectGitHub()} disabled={isLoading || !token.trim()} class="mt-3.5 min-h-12 w-full rounded-[10px] bg-[#0071e3] text-sm font-semibold text-white shadow-[0_2px_5px_rgba(0,113,227,.24)] hover:bg-[#0077ed] hover:shadow-[0_4px_10px_rgba(0,113,227,.27)] disabled:border-[#d1d1d6] disabled:bg-[#e5e5ea] disabled:text-[#636366] disabled:shadow-none">
+                {isLoading ? <><Spinner class="size-4 text-white" />{t('连接中…', 'Connecting…')}</> : <>{t('连接到 GitHub', 'Connect to GitHub')}<ArrowRight data-icon="inline-end" aria-hidden="true" /></>}
+              </Button>
 
               <a
                 href="https://github.com/settings/tokens"
@@ -219,7 +230,8 @@ export const LoginScreen: Vue.FC = () => {
               </a>
             </>
           )}
-        </section>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );

@@ -6,178 +6,281 @@ export default {
   darkMode: 'class',
   theme: {
     screens: {
-      'sm': '640px',
-      'md': '768px',
-      'lg': '1024px',
-      'xl': '1300px',
-      '2xl': '1536px',
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1300px',
+      '2xl': '1536px'
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'],
-        mono: ['Berkeley Mono', 'ui-monospace', 'SF Mono', 'Menlo', 'monospace'],
+        sans: [
+          'Inter',
+          'system-ui',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'Roboto',
+          'Oxygen',
+          'Ubuntu',
+          'Cantarell',
+          'Fira Sans',
+          'Droid Sans',
+          'Helvetica Neue',
+          'sans-serif'
+        ],
+        mono: [
+          'Berkeley Mono',
+          'ui-monospace',
+          'SF Mono',
+          'Menlo',
+          'monospace'
+        ]
       },
       colors: {
-        // Linear Base Backgrounds
-        'marketing-black': '#08090a', 
+        'marketing-black': '#08090a',
         'panel-dark': '#0f1011',
         'surface-3': '#191a1b',
         'surface-sec': '#28282c',
-        
-        // Linear Text
         'text-primary': '#f7f8f8',
         'text-secondary': '#d0d6e0',
         'text-tertiary': '#8a8f98',
         'text-quaternary': '#62666d',
-        
-        // Linear Brand & Accent
-      brand: {
-        indigo: '#5e6ad2',
-        violet: '#7170ff',
-        hover: '#828fff',
-      },
-      'security-lavender': '#7a7fad',
-        
-        // Linear Status
+        brand: {
+          indigo: '#5e6ad2',
+          violet: '#7170ff',
+          hover: '#828fff'
+        },
+        'security-lavender': '#7a7fad',
         'status-green': '#27a644',
         'status-emerald': '#10b981',
         'status-amber': '#f59e0b',
         'status-red': '#ef4444',
-        
-        // Linear Borders (Solid fallbacks, though we mainly use rgba)
         'border-primary': '#23252a',
         'border-secondary': '#34343a',
         'border-tertiary': '#3e3e44',
         'line-tint': '#141516',
         'line-tertiary': '#18191a',
-        
-        // Linear Light Mode Neutrals (Fallbacks if needed)
         'light-bg': '#f7f8f8',
         'light-surface': '#f3f4f5',
         'light-border': '#d0d6e0',
         'light-border-alt': '#e6e6e6',
-
-        // Keeping existing for gradual migration
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#0066CC',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          '50': '#eff6ff',
+          '100': '#dbeafe',
+          '200': '#bfdbfe',
+          '300': '#93c5fd',
+          '400': '#60a5fa',
+          '500': '#3b82f6',
+          '600': '#0066CC',
+          '700': '#1d4ed8',
+          '800': '#1e40af',
+          '900': '#1e3a8a',
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))'
         },
         secondary: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          300: '#c4b5fd',
-          400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#7c3aed',
-          700: '#6d28d9',
-          800: '#5b21b6',
-          900: '#4c1d95',
+          '50': '#f5f3ff',
+          '100': '#ede9fe',
+          '200': '#ddd6fe',
+          '300': '#c4b5fd',
+          '400': '#a78bfa',
+          '500': '#8b5cf6',
+          '600': '#7c3aed',
+          '700': '#6d28d9',
+          '800': '#5b21b6',
+          '900': '#4c1d95',
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))'
         },
         accent: {
-          50: '#fefbf0',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
+          '50': '#fefbf0',
+          '100': '#fef3c7',
+          '200': '#fde68a',
+          '300': '#fcd34d',
+          '400': '#fbbf24',
+          '500': '#f59e0b',
+          '600': '#d97706',
+          '700': '#b45309',
+          '800': '#92400e',
+          '900': '#78350f',
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))'
+        },
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))'
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))'
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))'
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))'
+        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        chart: {
+          '1': 'hsl(var(--chart-1))',
+          '2': 'hsl(var(--chart-2))',
+          '3': 'hsl(var(--chart-3))',
+          '4': 'hsl(var(--chart-4))',
+          '5': 'hsl(var(--chart-5))'
         }
       },
       fontWeight: {
-        'light': '300',
-        'normal': '400',
-        'medium': '510',
-        'semibold': '590',
+        light: '300',
+        normal: '400',
+        medium: '510',
+        semibold: '590'
       },
       letterSpacing: {
         'display-xl': '-1.584px',
         'display-lg': '-1.408px',
-        'display': '-1.056px',
-        'h1': '-0.704px',
-        'h2': '-0.288px',
-        'h3': '-0.24px',
+        display: '-1.056px',
+        h1: '-0.704px',
+        h2: '-0.288px',
+        h3: '-0.24px',
         'body-lg': '-0.165px',
-        'caption': '-0.13px',
-        'tiny': '-0.15px',
+        caption: '-0.13px',
+        tiny: '-0.15px'
       },
       boxShadow: {
-        'subtle': '0px 1.2px 0px rgba(0,0,0,0.03)',
-        'ring': '0px 0px 0px 1px rgba(0,0,0,0.2)',
-        'elevated': '0px 2px 4px rgba(0,0,0,0.4)',
-        'workspace': '0 24px 70px -32px rgba(15, 23, 42, 0.24)',
-        'panel': '0 12px 40px -26px rgba(15, 23, 42, 0.22), 0 1px 2px rgba(15, 23, 42, 0.04)',
-        'press': '0 1px 1px rgba(15, 23, 42, 0.04), 0 6px 18px -12px rgba(79, 70, 229, 0.55)',
-        'dialog': '0px 8px 2px rgba(0,0,0,0), 0px 5px 2px rgba(0,0,0,0.01), 0px 3px 2px rgba(0,0,0,0.04), 0px 1px 1px rgba(0,0,0,0.07), 0px 0px 1px rgba(0,0,0,0.08)',
-        'focus': '0px 4px 12px rgba(0,0,0,0.1)',
-        'inset-panel': '0px 0px 12px 0px rgba(0,0,0,0.2) inset',
+        subtle: '0px 1.2px 0px rgba(0,0,0,0.03)',
+        ring: '0px 0px 0px 1px rgba(0,0,0,0.2)',
+        elevated: '0px 2px 4px rgba(0,0,0,0.4)',
+        workspace: '0 24px 70px -32px rgba(15, 23, 42, 0.24)',
+        panel: '0 12px 40px -26px rgba(15, 23, 42, 0.22), 0 1px 2px rgba(15, 23, 42, 0.04)',
+        press: '0 1px 1px rgba(15, 23, 42, 0.04), 0 6px 18px -12px rgba(79, 70, 229, 0.55)',
+        dialog: '0px 8px 2px rgba(0,0,0,0), 0px 5px 2px rgba(0,0,0,0.01), 0px 3px 2px rgba(0,0,0,0.04), 0px 1px 1px rgba(0,0,0,0.07), 0px 0px 1px rgba(0,0,0,0.08)',
+        focus: '0px 4px 12px rgba(0,0,0,0.1)',
+        'inset-panel': '0px 0px 12px 0px rgba(0,0,0,0.2) inset'
       },
       animation: {
         'fade-in': 'fadeIn 0.2s ease-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'slide-down': 'slideDown 0.3s ease-in forwards',
         'bounce-gentle': 'bounceGentle 2s ease-in-out infinite',
-        'shake': 'shake 0.5s ease-in-out',
+        shake: 'shake 0.5s ease-in-out',
         'bounce-twice': 'bounceTwice 0.6s ease-in-out',
         'selection-exit': 'selectionExit 0.25s ease-out forwards',
         'expand-fade': 'expandFade 0.3s ease-out',
-        'material-in': 'materialIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)',
+        'material-in': 'materialIn 0.32s cubic-bezier(0.22, 1, 0.36, 1)'
       },
       keyframes: {
         fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+          '0%': {
+            opacity: '0'
+          },
+          '100%': {
+            opacity: '1'
+          }
         },
         slideUp: {
-          '0%': { transform: 'translateY(100%)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
+          '0%': {
+            transform: 'translateY(100%)',
+            opacity: '0'
+          },
+          '100%': {
+            transform: 'translateY(0)',
+            opacity: '1'
+          }
         },
         slideDown: {
-          '0%': { transform: 'translateY(0)', opacity: '1' },
-          '100%': { transform: 'translateY(100%)', opacity: '0' },
+          '0%': {
+            transform: 'translateY(0)',
+            opacity: '1'
+          },
+          '100%': {
+            transform: 'translateY(100%)',
+            opacity: '0'
+          }
         },
         bounceGentle: {
-          '0%, 20%, 50%, 80%, 100%': { transform: 'translateY(0)' },
-          '40%': { transform: 'translateY(-4px)' },
-          '60%': { transform: 'translateY(-2px)' },
+          '0%, 20%, 50%, 80%, 100%': {
+            transform: 'translateY(0)'
+          },
+          '40%': {
+            transform: 'translateY(-4px)'
+          },
+          '60%': {
+            transform: 'translateY(-2px)'
+          }
         },
         shake: {
-          '0%, 100%': { transform: 'translateX(0)' },
-          '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-4px)' },
-          '20%, 40%, 60%, 80%': { transform: 'translateX(4px)' },
+          '0%, 100%': {
+            transform: 'translateX(0)'
+          },
+          '10%, 30%, 50%, 70%, 90%': {
+            transform: 'translateX(-4px)'
+          },
+          '20%, 40%, 60%, 80%': {
+            transform: 'translateX(4px)'
+          }
         },
         bounceTwice: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '25%': { transform: 'translateY(-12px)' },
-          '50%': { transform: 'translateY(0)' },
-          '75%': { transform: 'translateY(-8px)' },
+          '0%, 100%': {
+            transform: 'translateY(0)'
+          },
+          '25%': {
+            transform: 'translateY(-12px)'
+          },
+          '50%': {
+            transform: 'translateY(0)'
+          },
+          '75%': {
+            transform: 'translateY(-8px)'
+          }
         },
         selectionExit: {
-          '0%': { transform: 'scale(1)', boxShadow: '0 0 0 2px #3b82f6' },
-          '50%': { transform: 'scale(1.01)', boxShadow: '0 0 0 3px #60a5fa' },
-          '100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 transparent' },
+          '0%': {
+            transform: 'scale(1)',
+            boxShadow: '0 0 0 2px #3b82f6'
+          },
+          '50%': {
+            transform: 'scale(1.01)',
+            boxShadow: '0 0 0 3px #60a5fa'
+          },
+          '100%': {
+            transform: 'scale(1)',
+            boxShadow: '0 0 0 0 transparent'
+          }
         },
         expandFade: {
-          '0%': { opacity: '0', transform: 'translateY(-8px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(-8px)'
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)'
+          }
         },
         materialIn: {
-          '0%': { opacity: '0', transform: 'translateY(8px) scale(0.985)' },
-          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
-        },
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(8px) scale(0.985)'
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0) scale(1)'
+          }
+        }
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)'
       }
-    },
+    }
   },
   plugins: [
     typography,

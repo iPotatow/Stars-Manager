@@ -10,6 +10,9 @@ import { isRepoCustomized } from '../utils/repoUtils';
 import { applyRepoFilters, performBasicTextSearch as basicTextSearch, sortRepositories } from '../utils/repoSearch';
 import { NO_LICENSE_SENTINEL, normalizeLicense } from '../utils/licenseFilter';
 import { NumberInput } from './ui/NumberInput';
+import { Button } from './ui/button';
+import { Card } from './ui/card';
+import { Input } from './ui/input';
 
 type SortBy = 'stars' | 'updated' | 'name' | 'starred';
 
@@ -44,14 +47,16 @@ const SortByDropdown: Vue.FC<SortByDropdownProps> = ({ value, onChange, t }) => 
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button
+      <Button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="gsm-secondary-button h-9 whitespace-nowrap px-3 py-2 text-xs"
+        variant="outline"
+        size="sm"
+        class="whitespace-nowrap px-3 py-2 text-xs"
       >
         <span>{t(selected?.labelZh ?? '', selected?.labelEn ?? '')}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
+        <ChevronDown className={`size-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </Button>
 
       {isOpen && (
         <div className="absolute right-0 top-full z-40 mt-2 w-52 overflow-hidden rounded-xl border border-slate-200/90 bg-white p-1.5 shadow-[0_20px_55px_rgba(15,23,42,0.18)] dark:border-white/[0.08] dark:bg-[#151e2f]">
@@ -813,11 +818,11 @@ export const SearchBar: Vue.FC = () => {
   });
 
   return (
-    <div className="gsm-panel-soft relative z-20 mb-5 p-3 sm:p-4">
+    <Card class="relative z-20 mb-5 border-border/70 p-3 sm:p-4">
       {/* Search Input */}
       <div className="relative z-40 mb-3">
         <Search className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
-        <input
+        <Input
           ref={searchInputRef}
           type="text"
           placeholder={t(
@@ -831,7 +836,7 @@ export const SearchBar: Vue.FC = () => {
           onBlur={handleInputBlur}
           onCompositionstart={handleCompositionStart}
           onCompositionend={handleCompositionEnd}
-          className="gsm-field h-12 pl-11 pr-24 text-[13px] sm:pr-44"
+          class="h-12 pl-11 pr-24 text-[13px] sm:pr-44"
         />
 
         {/* Search History Dropdown */}
@@ -899,17 +904,17 @@ export const SearchBar: Vue.FC = () => {
               <X className="w-4 h-4" />
             </button>
           )}
-          <button
+          <Button
             onClick={handleAISearch}
             disabled={isSearching}
-            className="gsm-primary-button h-9 px-3 py-2 text-xs sm:px-4"
+            class="h-9 px-3 py-2 text-xs sm:px-4"
             title={activeAIConfig
               ? t('使用配置的 AI 服务搜索并重排结果', 'Use the configured AI service to search and rerank results')
               : t('使用本地排序规则搜索', 'Search with local ranking rules')}
           >
             <Bot className="w-4 h-4" />
             <span className="hidden sm:inline">{isSearching ? t('搜索中...', 'Searching...') : t('AI搜索', 'AI Search')}</span>
-          </button>
+          </Button>
           {isSearching && searchPhase && (
             <span className="text-xs text-gray-400 dark:text-gray-500 animate-pulse whitespace-nowrap">
               {searchPhase}
@@ -976,26 +981,28 @@ export const SearchBar: Vue.FC = () => {
             onChange={(value) => setSearchFilters({ sortBy: value as 'stars' | 'updated' | 'name' | 'starred' })}
             t={t}
           />
-          <button
+          <Button
             onClick={() => setSearchFilters({
               sortOrder: searchFilters.sortOrder === 'desc' ? 'asc' : 'desc'
             })}
-            className="gsm-icon-button h-9 w-9 border-slate-200/90 bg-white text-sm dark:border-white/[0.08] dark:bg-white/[0.035]"
+            variant="outline"
+            size="icon"
+            class="text-sm"
           >
             {searchFilters.sortOrder === 'desc' ? '↓' : '↑'}
-          </button>
+          </Button>
 
           {/* Sync Button */}
           <div className="flex items-center gap-2 ml-1">
-            <button
+            <Button
               onClick={handleStarSync}
               disabled={isSyncingStars}
-              className="gsm-primary-button h-9 px-3 py-2 text-xs"
+              class="h-9 px-3 py-2 text-xs"
               title={t('同步星标仓库列表', 'Sync starred repositories')}
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isSyncingStars ? 'animate-spin' : ''}`} />
               <span className="whitespace-nowrap">{t('同步', 'Sync')}</span>
-            </button>
+            </Button>
             <div className="group relative">
               <Clock className="w-4 h-4 text-gray-400 dark:text-text-quaternary cursor-help" />
               <div className="absolute right-0 top-full mt-2 w-max p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-xs rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[9999] whitespace-nowrap">
@@ -1331,6 +1338,6 @@ export const SearchBar: Vue.FC = () => {
       )}
 
 
-    </div>
+    </Card>
   );
 };

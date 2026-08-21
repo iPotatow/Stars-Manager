@@ -14,6 +14,8 @@ import { AIAnalysisOptimizer, AnalysisResult } from '../services/aiAnalysisOptim
 import { resolveCategoryAssignment, getAICategory, getDefaultCategory, computeCustomCategory, matchesCategory, buildCategoryHints } from '../utils/categoryUtils';
 import { forceSyncToBackend } from '../services/autoSync';
 import { useDialog } from '../hooks/useDialog';
+import { Button } from './ui/button';
+import { Card } from './ui/card';
 
 interface RepositoryListProps {
   repositories: Repository[];
@@ -984,7 +986,7 @@ export const RepositoryList: Vue.FC<RepositoryListProps> = ({
     const categoryName = selectedCategoryObj?.name || selectedCategory;
     
     return (
-      <div className="gsm-panel-soft py-16 text-center">
+      <Card class="py-16 text-center">
         <p className="mb-4 text-sm font-medium text-slate-500 dark:text-slate-400">
           {searchFilters.query ? (
             language === 'zh' 
@@ -998,7 +1000,7 @@ export const RepositoryList: Vue.FC<RepositoryListProps> = ({
               )
           }
         </p>
-      </div>
+      </Card>
     );
   }
 
@@ -1017,15 +1019,17 @@ export const RepositoryList: Vue.FC<RepositoryListProps> = ({
       )}
 
       {/* Controls Bar */}
-      <div className="gsm-panel-soft flex min-w-0 flex-col gap-3 p-3 sm:flex-row sm:items-start sm:justify-between sm:p-3.5">
+      <Card class="flex min-w-0 flex-col gap-3 p-3 sm:flex-row sm:items-start sm:justify-between sm:p-3.5">
         <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
 
           {/* AI Analysis Dropdown Button */}
           <div className="relative">
-            <button
+            <Button
               onClick={() => setShowDropdown(!showDropdown)}
               disabled={isLoading}
-              className="gsm-secondary-button h-9 px-3 py-2 text-xs"
+              variant="outline"
+              size="sm"
+              class="h-9 px-3 py-2 text-xs"
             >
               <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="whitespace-nowrap">
@@ -1035,7 +1039,7 @@ export const RepositoryList: Vue.FC<RepositoryListProps> = ({
                 }
               </span>
               <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </button>
+            </Button>
 
             {/* Dropdown Menu */}
             {showDropdown && !isLoading && (
@@ -1185,7 +1189,7 @@ export const RepositoryList: Vue.FC<RepositoryListProps> = ({
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Repository Grid with consistent card widths */}
       <div
