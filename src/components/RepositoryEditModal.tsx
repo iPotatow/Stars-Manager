@@ -5,6 +5,7 @@ import { Repository } from '../types';
 import { useAppStore, getAllCategories } from '../store/useAppStore';
 import { forceSyncToBackend } from '../services/autoSync';
 import { computeCustomCategory, getAICategory, getDefaultCategory } from '../utils/categoryUtils';
+import { OSS_TAXONOMY_FACETS } from '../constants/ossTaxonomy';
 
 interface RepositoryEditModalProps {
   isOpen: boolean;
@@ -852,11 +853,27 @@ export const RepositoryEditModal: Vue.FC<RepositoryEditModalProps> = ({
             className={inputClass}
           >
             <option value="">{t('选择分类...', 'Select category...')}</option>
-            {allCategories.filter(cat => cat.id !== 'all').map(category => (
-              <option key={category.id} value={category.name}>
-                {category.icon} {category.name}
-              </option>
+            {OSS_TAXONOMY_FACETS.map(facet => (
+              <optgroup
+                key={facet.id}
+                label={language === 'zh' ? `${facet.labelZh} · ${facet.label}` : facet.label}
+              >
+                {allCategories.filter(category => category.facet === facet.id).map(category => (
+                  <option key={category.id} value={category.name}>
+                    {category.name}
+                  </option>
+                ))}
+              </optgroup>
             ))}
+            {allCategories.some(category => category.isCustom) && (
+              <optgroup label={t('自定义', 'Custom')}>
+                {allCategories.filter(category => category.isCustom).map(category => (
+                  <option key={category.id} value={category.name}>
+                    {category.icon} {category.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
           </select>
 
           {/* Category Action Buttons */}

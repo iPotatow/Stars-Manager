@@ -8,27 +8,30 @@ import {
 } from './repositoryCategories';
 
 describe('repository categorization model', () => {
-  it('uses the focused default taxonomy', () => {
-    expect(defaultCategories.map(category => category.id)).toEqual([
-      'all', 'ai', 'development', 'tools', 'operations', 'security', 'design', 'learning', 'creative',
-    ]);
-    expect(getDefaultCategoryNames('zh')).toEqual([
-      '全部分类', '人工智能', '开发技术', '工具软件', '运维部署', '网络安全', '设计资源', '学习资源', '创意收藏',
-    ]);
-    expect(getDefaultCategoryNames('en')).toContain('Artificial Intelligence');
-    expect(getDefaultCategoryNames('en')).not.toContain('Web Apps');
+  it('uses the complete six-facet OSS Taxonomy snapshot', () => {
+    expect(defaultCategories).toHaveLength(202);
+    expect(defaultCategories[0].id).toBe('all');
+    expect(new Set(defaultCategories.slice(1).map(category => category.facet))).toEqual(new Set([
+      'domain', 'role', 'technology', 'audience', 'layer', 'function',
+    ]));
+    expect(defaultCategories.some(category => category.id === 'oss:domain:machine-learning')).toBe(true);
+    expect(defaultCategories.some(category => category.id === 'oss:role:cli-tool')).toBe(true);
+    expect(defaultCategories.some(category => category.id === 'ai')).toBe(false);
+    expect(getDefaultCategoryNames('zh')).toContain('machine-learning');
+    expect(getDefaultCategoryNames('en')).toContain('cli-tool');
+    expect(getDefaultCategoryNames('zh')).not.toContain('全部分类');
   });
 
-  it('maps old sidebar preferences into the new groups', () => {
+  it('maps old sidebar preferences into specific taxonomy terms', () => {
     expect(migrateCategoryIds(['frontend', 'delivery', 'learning', 'frontend'])).toEqual([
-      'development', 'operations', 'learning',
+      'oss:layer:frontend', 'oss:domain:devops', 'oss:domain:education',
     ]);
   });
 
   it('keeps previous repository assignments visible after the taxonomy change', () => {
-    expect(migrateCategoryName('前端与界面')).toBe('开发技术');
+    expect(migrateCategoryName('前端与界面')).toBe('Developer');
     expect(migrateRepositoryCategory({ custom_category: '工程与交付' })).toEqual({
-      custom_category: '运维部署',
+      custom_category: 'DevOps',
     });
   });
 });

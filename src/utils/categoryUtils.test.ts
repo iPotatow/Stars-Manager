@@ -100,6 +100,22 @@ describe('getEffectiveTags', () => {
 });
 
 describe('matchesCategory', () => {
+  it('does not match short ASCII taxonomy terms inside unrelated words', () => {
+    const repository = {
+      ...baseRepository,
+      description: 'A Tailwind component maintained by the community',
+      ai_tags: [],
+      topics: [],
+    };
+    expect(matchesCategory(repository, aiCategory)).toBe(false);
+    expect(matchesCategory(repository, {
+      id: 'go',
+      name: 'Go',
+      icon: 'code',
+      keywords: ['go'],
+    })).toBe(false);
+  });
+
   it('uses AI tags when custom_category is undefined', () => {
     expect(matchesCategory(baseRepository, aiCategory)).toBe(true);
   });

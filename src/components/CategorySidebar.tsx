@@ -7,14 +7,12 @@ import {
   ChevronLeft,
   ChevronRight,
   FolderKanban,
-  Bot,
-  Code2,
-  Wrench,
-  Server,
-  ShieldCheck,
-  Palette,
-  GraduationCap,
-  Lightbulb,
+  Globe2,
+  Shapes,
+  Cpu,
+  Users,
+  Layers3,
+  ListChecks,
 } from '@lucide/vue';
 import { Category, Repository } from '../types';
 import { useAppStore, getAllCategories, sortCategoriesByOrder } from '../store/useAppStore';
@@ -22,6 +20,7 @@ import { CategoryEditModal } from './CategoryEditModal';
 import { forceSyncToBackend } from '../services/autoSync';
 import { getAICategory, getDefaultCategory, computeCustomCategory, matchesCategory } from '../utils/categoryUtils';
 import { useDialog } from '../hooks/useDialog';
+import { OSS_TAXONOMY_FACETS, type OssTaxonomyFacet } from '../constants/ossTaxonomy';
 
 interface CategorySidebarProps {
   repositories: Repository[];
@@ -31,18 +30,16 @@ interface CategorySidebarProps {
 
 const CATEGORY_ICONS: Record<string, Vue.ComponentType<{ className?: string }>> = {
   all: FolderKanban,
-  ai: Bot,
-  development: Code2,
-  tools: Wrench,
-  operations: Server,
-  security: ShieldCheck,
-  design: Palette,
-  learning: GraduationCap,
-  creative: Lightbulb,
+  domain: Globe2,
+  role: Shapes,
+  technology: Cpu,
+  audience: Users,
+  layer: Layers3,
+  function: ListChecks,
 };
 
-const CategoryGlyph = ({ id, className = 'h-4 w-4' }: { id: string; className?: string }) => {
-  const Icon = CATEGORY_ICONS[id] ?? FolderKanban;
+const CategoryGlyph = ({ category, className = 'h-4 w-4' }: { category: Category; className?: string }) => {
+  const Icon = CATEGORY_ICONS[category.id === 'all' ? 'all' : category.facet ?? 'custom'] ?? FolderKanban;
   return <Icon className={className} />;
 };
 
@@ -212,6 +209,22 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
     return categoryCounts.get(category.id) ?? 0;
   }, [categoryCounts]);
 
+  // The upstream taxonomy contains 201 terms. Keep the sidebar focused on
+  // terms that currently match repositories, while selectors/settings retain
+  // the complete vocabulary.
+  const sidebarCategories = useMemo(() => allCategories.filter(category => (
+    category.id === 'all'
+    || category.isCustom
+    || category.id === selectedCategory
+    || (categoryCounts.get(category.id) ?? 0) > 0
+  )), [allCategories, categoryCounts, selectedCategory]);
+
+  const getFacetLabel = (facet: OssTaxonomyFacet): string => {
+    const definition = OSS_TAXONOMY_FACETS.find(item => item.id === facet);
+    if (!definition) return facet;
+    return language === 'zh' ? `${definition.labelZh} · ${definition.label}` : definition.label;
+  };
+
   const handleAddCategory = () => {
     setIsCreatingCategory(true);
     setEditingCategory(null);
@@ -345,7 +358,7 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
         <div className="gsm-panel-soft w-full overflow-hidden p-3 sm:p-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-bold tracking-[-0.02em] text-slate-950 dark:text-white">
-              {t('应用分类', 'Categories')}
+              {t('OSS 分类', 'OSS Taxonomy')}
             </h3>
             <button
               onClick={handleAddCategory}
@@ -358,7 +371,7 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
           </div>
 
           <div className="flex gap-2 overflow-x-auto pb-1">
-            {allCategories.map(category => {
+            {sidebarCategories.map(category => {
               const count = getCategoryCount(category);
               const isSelected = selectedCategory === category.id;
               const isDragTarget = dragOverCategoryId === category.id;
@@ -393,7 +406,7 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
                     aria-current={isSelected ? 'page' : undefined}
                   >
                     <div className="flex items-center space-x-3 min-w-0 flex-1">
-                      <CategoryGlyph id={category.id} className="h-4 w-4 shrink-0" />
+                      <CategoryGlyph category={category} className="h-4 w-4 shrink-0" />
                       <span className="text-sm font-medium truncate">{category.name}</span>
                     </div>
                     <span
@@ -418,7 +431,7 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
         <div className="relative z-10 flex shrink-0 xl:sticky xl:top-6 xl:self-start">
           {/* 侧栏容器 */}
           <div
-            className={`relative overflow-visible rounded-2xl border border-slate-200/80 bg-white/[0.78] shadow-panel backdrop-blur-xl transition-all duration-300 ease-out dark:border-white/[0.07] dark:bg-[#101827]/[0.88] ${
+            className={`relative overflow-visible rounded-2xl border border-black/[0.12] bg-white/[0.76] shadow-[0_8px_24px_rgba(0,0,0,.06)] backdrop-blur-xl backdrop-saturate-[165%] transition-all duration-300 ease-out ${
               isSidebarCollapsed
                 ? 'w-14 p-2'
                 : 'w-[248px] p-3'
@@ -448,12 +461,12 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
                 <div className="flex flex-col items-center space-y-2">
                   {(() => {
                     // 确保选中分类在显示列表中
-                    const selectedIndex = allCategories.findIndex(c => c.id === selectedCategory);
+                    const selectedIndex = sidebarCategories.findIndex(c => c.id === selectedCategory);
                     const isSelectedHidden = selectedIndex >= collapsedSidebarCategoryCount;
-                    let displayCategories = allCategories.slice(0, collapsedSidebarCategoryCount);
+                    let displayCategories = sidebarCategories.slice(0, collapsedSidebarCategoryCount);
                     if (isSelectedHidden && selectedIndex !== -1) {
                       // 用选中分类替换最后一个
-                      displayCategories = [...allCategories.slice(0, collapsedSidebarCategoryCount - 1), allCategories[selectedIndex]];
+                      displayCategories = [...sidebarCategories.slice(0, collapsedSidebarCategoryCount - 1), sidebarCategories[selectedIndex]];
                     }
                     return displayCategories.map((category) => {
                       const isSelected = selectedCategory === category.id;
@@ -486,7 +499,7 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
                             title={category.name}
                             aria-label={category.name}
                           >
-                            <CategoryGlyph id={category.id} className="h-4 w-4" />
+                            <CategoryGlyph category={category} className="h-4 w-4" />
                           </button>
                         </div>
                       );
@@ -514,7 +527,7 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
                       showText ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'
                     }`}
                   >
-                    {t('应用分类', 'Categories')}
+                    {t('OSS 分类', 'OSS Taxonomy')}
                   </h3>
                   <div className="flex items-center gap-1">
                     <button
@@ -542,35 +555,42 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
                 <div
                   ref={categoryListRef}
                   onScroll={handleCategoryScroll}
-                  className={`space-y-1 overflow-y-auto max-h-[calc(100vh-12rem)] pr-1 category-scrollbar ${isScrolling ? 'is-scrolling' : ''}`}
+                  className={`scrollbar-auto max-h-[calc(100vh-12rem)] space-y-1 overflow-y-auto pr-1 ${isScrolling ? 'scrolling' : ''}`}
                 >
-                  {allCategories.map((category, index) => {
+                  {sidebarCategories.map((category, index) => {
                     const count = getCategoryCount(category);
                     const isSelected = selectedCategory === category.id;
                     const isDragTarget = dragOverCategoryId === category.id;
+                    const previousCategory = sidebarCategories[index - 1];
+                    const showFacetHeading = category.facet && previousCategory?.facet !== category.facet;
 
                     return (
-                      <div
-                        key={category.id}
-                        className="group relative"
-                        style={{
-                          transitionDelay: showText ? `${Math.min(index * 30, 300)}ms` : '0ms',
-                        }}
-                        onDragOver={(event) => {
-                          if (category.id === 'all') return;
-                          event.preventDefault();
-                          setDragOverCategoryId(category.id);
-                        }}
-                        onDragLeave={() => {
-                          if (dragOverCategoryId === category.id) {
-                            setDragOverCategoryId(null);
-                          }
-                        }}
-                        onDrop={(event) => handleDropOnCategory(event, category)}
-                      >
+                      <div key={category.id}>
+                        {showFacetHeading && category.facet && (
+                          <div className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                            {getFacetLabel(category.facet)}
+                          </div>
+                        )}
+                        <div
+                          className="group relative"
+                          style={{
+                            transitionDelay: showText ? `${Math.min(index * 30, 300)}ms` : '0ms',
+                          }}
+                          onDragOver={(event) => {
+                            if (category.id === 'all') return;
+                            event.preventDefault();
+                            setDragOverCategoryId(category.id);
+                          }}
+                          onDragLeave={() => {
+                            if (dragOverCategoryId === category.id) {
+                              setDragOverCategoryId(null);
+                            }
+                          }}
+                          onDrop={(event) => handleDropOnCategory(event, category)}
+                        >
                         <button
                           onClick={() => handleCategoryClick(category.id)}
-                          className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left transition-all duration-200 ease-out ${
+                          className={`flex min-h-10 w-full items-center justify-between rounded-[10px] px-3 py-2.5 text-left transition-all duration-200 ease-out ${
                             isSelected
                               ? 'bg-brand-indigo/[0.10] font-semibold text-slate-950 ring-1 ring-brand-indigo/10 dark:bg-brand-indigo/20 dark:text-white'
                               : isDragTarget
@@ -580,7 +600,7 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
                           title={category.name}
                         >
                           <div className="flex items-center space-x-3 min-w-0 flex-1">
-                            <CategoryGlyph id={category.id} className="h-4 w-4 shrink-0" />
+                            <CategoryGlyph category={category} className="h-4 w-4 shrink-0" />
                             <span
                               className={`text-sm font-medium truncate transition-all duration-200 ease-out ${
                                 showText ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'
@@ -607,17 +627,19 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
                         {/* 操作按钮 - 绝对定位，hover/focus-within 时显示，不占位 */}
                         {category.id !== 'all' && (
                           <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEditCategory(category);
-                              }}
-                              className="p-1 rounded-md hover:bg-gray-200 dark:hover:bg-white/10 dark:text-text-secondary"
-                              title={t('编辑分类', 'Edit category')}
-                              aria-label={t('编辑分类', 'Edit category')}
-                            >
-                              <Edit3 className="w-3.5 h-3.5" />
-                            </button>
+                            {!category.facet && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEditCategory(category);
+                                }}
+                                className="p-1 rounded-md hover:bg-gray-200 dark:hover:bg-white/10 dark:text-text-secondary"
+                                title={t('编辑分类', 'Edit category')}
+                                aria-label={t('编辑分类', 'Edit category')}
+                              >
+                                <Edit3 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
                             {category.isCustom ? (
                               <button
                                 onClick={(e) => {
@@ -645,6 +667,7 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
                             )}
                           </div>
                         )}
+                        </div>
                       </div>
                     );
                   })}

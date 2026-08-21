@@ -7,6 +7,34 @@ const normalizeTags = (tags: string[] | undefined): string[] => {
   return (tags || []).map(tag => tag.trim()).filter(tag => tag.length > 0);
 };
 
+const normalizeMatchText = (value: string): string => value
+  .normalize('NFKC')
+  .toLowerCase()
+  .replace(/[_-]+/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
+
+const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/** Match complete taxonomy terms instead of arbitrary substrings (`ai` must not match `tailwind`). */
+const textContainsTerm = (text: string, term: string): boolean => {
+  const normalizedText = normalizeMatchText(text);
+  const normalizedTerm = normalizeMatchText(term);
+  if (!normalizedText || !normalizedTerm) return false;
+
+  // Chinese/Japanese/Korean terms do not have reliable ASCII word boundaries.
+  if (Array.from(normalizedTerm).some(character => (character.codePointAt(0) ?? 0) > 127)) {
+    return normalizedText.includes(normalizedTerm);
+  }
+
+  const phrase = escapeRegExp(normalizedTerm).replace(/\\ /g, '\\s+');
+  return new RegExp(`(^|[^a-z0-9])${phrase}(?=$|[^a-z0-9])`, 'i').test(normalizedText);
+};
+
+const termsOverlap = (left: string, right: string): boolean => (
+  textContainsTerm(left, right) || textContainsTerm(right, left)
+);
+
 /**
  * 获取用于分类匹配的有效标签
  * 优先级与卡片展示一致：自定义标签 > AI标签 > Topics。
@@ -36,8 +64,7 @@ export const getAICategory = (repo: Repository, allCategories: Category[]): stri
 
     const hasMatch = repo.ai_tags.some(tag =>
       category.keywords.some(keyword =>
-        tag.toLowerCase().includes(keyword.toLowerCase()) ||
-        keyword.toLowerCase().includes(tag.toLowerCase())
+        termsOverlap(tag, keyword)
       )
     );
 
@@ -64,7 +91,7 @@ export const getDefaultCategory = (repo: Repository, allCategories: Category[]):
     ].join(' ').toLowerCase();
 
     const hasMatch = category.keywords.some(keyword =>
-      repoText.includes(keyword.toLowerCase())
+      textContainsTerm(repoText, keyword)
     );
 
     if (hasMatch) {
@@ -122,16 +149,12 @@ const tagMatchesCategory = (
 ): boolean => {
   const tagLower = tag.toLowerCase();
   const keywordMatch = getCategoryKeywords(category).some(keyword =>
-    tagLower.includes(keyword.toLowerCase()) ||
-    keyword.toLowerCase().includes(tagLower)
+    termsOverlap(tagLower, keyword)
   );
   if (keywordMatch) return true;
 
   if (matchCategoryName) {
-    const nameLower = category.name.toLowerCase();
-    return nameLower === tagLower ||
-      nameLower.includes(tagLower) ||
-      tagLower.includes(nameLower);
+    return termsOverlap(category.name, tagLower);
   }
 
   return false;
@@ -167,7 +190,7 @@ export const matchesCategory = (
   ].join(' ').toLowerCase();
 
   return getCategoryKeywords(category).some(keyword =>
-    repoText.includes(keyword.toLowerCase())
+    textContainsTerm(repoText, keyword)
   );
 };
 
@@ -214,9 +237,9 @@ const matchCustomCategoryByMetadata = (
   const repoText = getRepoText(repository);
   return customCategories.find(category => {
     const keywords = getCategoryKeywords(category);
-    const keywordMatch = keywords.length > 0 && keywords.some(keyword => repoText.includes(keyword.toLowerCase()));
+    const keywordMatch = keywords.length > 0 && keywords.some(keyword => textContainsTerm(repoText, keyword));
     // 无有效关键词时才回退到分类名包含匹配，并保留现有语义
-    const nameFallback = keywordMatch === false && keywords.length === 0 && repoText.includes(category.name.toLowerCase());
+    const nameFallback = keywordMatch === false && keywords.length === 0 && textContainsTerm(repoText, category.name);
     return keywordMatch || nameFallback;
   });
 };
@@ -260,24 +283,17 @@ export const resolveCategoryAssignment = (
   const matchCustomCategory = (categories: Category[]) => categories.find(category => {
     const keywords = getCategoryKeywords(category);
     return normalizedTags.some(tag =>
-      category.name.toLowerCase() === tag.toLowerCase() ||
-      category.name.toLowerCase().includes(tag.toLowerCase()) ||
-      tag.toLowerCase().includes(category.name.toLowerCase()) ||
-      keywords.some(keyword =>
-        tag.toLowerCase().includes(keyword.toLowerCase()) ||
-        keyword.toLowerCase().includes(tag.toLowerCase())
-      )
+      normalizeMatchText(category.name) === normalizeMatchText(tag) ||
+      termsOverlap(category.name, tag) ||
+      keywords.some(keyword => termsOverlap(tag, keyword))
     );
   });
 
   const matchDefaultCategory = (categories: Category[]) => categories.find(category => {
     const keywords = getCategoryKeywords(category);
     return normalizedTags.some(tag =>
-      category.name.toLowerCase() === tag.toLowerCase() ||
-      keywords.some(keyword =>
-        tag.toLowerCase().includes(keyword.toLowerCase()) ||
-        keyword.toLowerCase().includes(tag.toLowerCase())
-      )
+      normalizeMatchText(category.name) === normalizeMatchText(tag) ||
+      keywords.some(keyword => termsOverlap(tag, keyword))
     );
   });
 

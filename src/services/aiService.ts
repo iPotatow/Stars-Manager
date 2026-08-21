@@ -670,7 +670,7 @@ ${this.sanitizeForPrompt(readmeContent.substring(0, 2000))}
     `.trim();
 
     const categoriesInfo = customCategories && customCategories.length > 0 
-      ? `\n\n${this.language === 'zh' ? '可用的应用分类' : 'Available Application Categories'}: ${customCategories.join(', ')}`
+      ? `\n\n${this.language === 'zh' ? '可用的 OSS Taxonomy 术语' : 'Available OSS Taxonomy Terms'}: ${customCategories.join(', ')}`
       : '';
 
     let customPrompt = this.config.customPrompt || '';
@@ -703,7 +703,7 @@ ${this.sanitizeForPrompt(readmeContent.substring(0, 2000))}
 
     if (this.language === 'zh') {
       const categoriesLine = customCategories && customCategories.length > 0
-        ? `\n可用分类（tags 请优先从中选择）：${customCategories.join(', ')}`
+        ? `\n可用 OSS Taxonomy 术语（tags 必须优先原样选用其中的英文术语）：${customCategories.join(', ')}`
         : '';
       const hintLine = categoryHints && categoryHints.length > 0
         ? `\n\n自定义分类提示：以下是用户自定义的分类及其关键词。当仓库的名称、描述、Topics 或 README 明显与某个自定义分类的关键词相关时，请务必把该自定义分类名作为 tags 之一（仍保持中文，3-5个）。\n${this.sanitizeForPrompt(categoryHints)}`
@@ -714,13 +714,13 @@ ${this.sanitizeForPrompt(readmeContent.substring(0, 2000))}
 要求：
 - summary：中文概述，说明仓库的主要功能和用途，不超过50字。
   禁止出现“我们被要求”“只输出JSON”“根据仓库信息”“summary/tags/platforms”等提示词复述。
-- tags：3-5个中文应用类型标签${customCategories && customCategories.length > 0 ? '，请优先从上方的可用分类中选择' : '，类似应用商店的分类，如：人工智能、开发技术、工具软件、运维部署、网络安全等'}。${categoriesLine}${hintLine}
+- tags：选择3-5个最相关的分类术语${customCategories && customCategories.length > 0 ? '，优先从上方 OSS Taxonomy 术语中原样选择，保留英文 kebab-case' : ''}。尽量分别覆盖领域、角色、技术层或功能，不要创造同义词。${categoriesLine}${hintLine}
 - platforms：只能从 ["mac","windows","linux","ios","android","docker","web","cli"] 中选择；无法判断则为 []。
 
 输出格式：
 {
   "summary": "中文概述",
-  "tags": ["标签1", "标签2", "标签3"],
+  "tags": ["machine-learning", "library", "python"],
   "platforms": ["web", "cli"]
 }
 
@@ -732,7 +732,7 @@ ${repoInfo}
       `.trim();
     } else {
       const categoriesLine = customCategories && customCategories.length > 0
-        ? `\nAvailable categories (tags should prioritize these): ${customCategories.join(', ')}`
+        ? `\nAvailable OSS Taxonomy terms (tags must prioritize these exact terms): ${customCategories.join(', ')}`
         : '';
       const hintLine = categoryHints && categoryHints.length > 0
         ? `\n\nCustom category hint: The following are user-defined custom categories with their keywords. When the repository keywords, description, Topics, or README clearly relate to these keywords, include the custom category name as-is in tags (3-5 tags total).\n${this.sanitizeForPrompt(categoryHints)}`
@@ -743,13 +743,13 @@ Please analyze the following GitHub repository information and only output a val
 Requirements:
 - summary: A concise English overview explaining the main functionality and purpose, no more than 50 words.
   Do not include prompt restatements such as "asked to", "only output JSON", "based on repository information", or "summary/tags/platforms".
-- tags: 3-5 English application type tags${customCategories && customCategories.length > 0 ? ', please prioritize from the available categories above' : ', similar to app store categories such as: development tools, web apps, mobile apps, database, AI tools, etc.'}.${categoriesLine}${hintLine}
+- tags: Choose the 3-5 most relevant classification terms${customCategories && customCategories.length > 0 ? ' from the OSS Taxonomy list above, preserving exact kebab-case spelling' : ''}. Prefer coverage across domain, role, technology/layer, or function; do not invent synonyms.${categoriesLine}${hintLine}
 - platforms: Must only choose from ["mac","windows","linux","ios","android","docker","web","cli"]; use [] if unable to determine.
 
 Output format:
 {
   "summary": "English overview",
-  "tags": ["tag1", "tag2", "tag3"],
+  "tags": ["machine-learning", "library", "python"],
   "platforms": ["web", "cli"]
 }
 

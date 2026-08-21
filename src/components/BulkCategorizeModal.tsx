@@ -1,8 +1,9 @@
-import Vue, { useState, useEffect } from "../vue-runtime.ts";
+import Vue, { useState, useEffect, useMemo } from "../vue-runtime.ts";
 import { Check } from '@lucide/vue';
 import { Modal } from './Modal';
 import { Repository } from '../types';
 import { useAppStore, getAllCategories } from '../store/useAppStore';
+import { OSS_TAXONOMY_FACETS } from '../constants/ossTaxonomy';
 
 interface BulkCategorizeModalProps {
   isOpen: boolean;
@@ -20,12 +21,24 @@ export const BulkCategorizeModal: Vue.FC<BulkCategorizeModalProps> = ({
   const { customCategories, hiddenDefaultCategoryIds, defaultCategoryOverrides, language } = useAppStore();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [categoryQuery, setCategoryQuery] = useState('');
 
   const allCategories = getAllCategories(customCategories, language, hiddenDefaultCategoryIds, defaultCategoryOverrides);
+  const filteredCategories = useMemo(() => {
+    const query = categoryQuery.trim().toLowerCase();
+    return allCategories.filter(category => {
+      if (category.id === 'all') return false;
+      if (!query) return true;
+      return [category.name, category.taxonomyTerm, category.description, ...(category.keywords ?? [])]
+        .filter(Boolean)
+        .some(value => String(value).toLowerCase().includes(query));
+    });
+  }, [allCategories, categoryQuery]);
 
   useEffect(() => {
     if (isOpen) {
       setSelectedCategory(null);
+      setCategoryQuery('');
     }
   }, [isOpen]);
 
@@ -67,8 +80,18 @@ export const BulkCategorizeModal: Vue.FC<BulkCategorizeModalProps> = ({
             {t('选择分类', 'Select Category')}
           </label>
 
+          <input
+            type="search"
+            value={categoryQuery}
+            onInput={(event) => setCategoryQuery(event.currentTarget.value)}
+            placeholder={t('搜索 OSS Taxonomy 术语…', 'Search OSS Taxonomy terms…')}
+            className="mb-3 w-full rounded-lg border border-black/[0.06] bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-brand-violet dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-text-primary"
+          />
+
           <div className="max-h-64 overflow-y-auto space-y-2">
-            {allCategories.filter(cat => cat.id !== 'all').map(category => (
+            {filteredCategories.map(category => {
+              const facet = OSS_TAXONOMY_FACETS.find(item => item.id === category.facet);
+              return (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
@@ -79,15 +102,22 @@ export const BulkCategorizeModal: Vue.FC<BulkCategorizeModalProps> = ({
                 }`}
               >
                 <div className="flex items-center space-x-3">
-                  <span className="text-sm font-medium text-gray-900 dark:text-text-primary">
-                    {category.name}
-                  </span>
+                  <div className="text-left">
+                    <span className="block text-sm font-medium text-gray-900 dark:text-text-primary">
+                      {category.name}
+                    </span>
+                    {facet && (
+                      <span className="block text-xs text-gray-500 dark:text-text-tertiary">
+                        {language === 'zh' ? `${facet.labelZh} · ${facet.label}` : facet.label}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 {selectedCategory === category.id && (
                   <Check className="w-5 h-5 text-brand-violet" />
                 )}
               </button>
-            ))}
+            );})}
           </div>
         </div>
 

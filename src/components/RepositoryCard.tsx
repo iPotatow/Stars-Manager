@@ -861,7 +861,7 @@ const RepositoryCardComponent: Vue.FC<RepositoryCardProps> = ({
 
   // 使用 useMemo 缓存卡片类名，避免重复计算
   const cardClassName = useMemo(() => {
-    const baseClasses = 'repository-card group relative flex h-full cursor-pointer select-none flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white/[0.88] p-5 shadow-panel backdrop-blur-sm transition duration-300 hover:-translate-y-0.5 hover:border-brand-indigo/25 hover:shadow-workspace focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-violet/50 dark:border-white/[0.07] dark:bg-[#101827]/[0.92] dark:hover:border-brand-indigo/[0.35]';
+    const baseClasses = 'repository-card group relative flex h-full cursor-pointer select-none flex-col overflow-hidden rounded-2xl border border-black/[0.14] bg-white/[0.82] p-5 shadow-[0_8px_24px_rgba(0,0,0,.06)] backdrop-blur-md backdrop-saturate-[165%] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-[#0071e3]/[0.28] hover:shadow-[0_18px_48px_rgba(0,0,0,.08),0_2px_8px_rgba(0,0,0,.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0071e3]/35';
     const selectedClasses = isSelected
       ? 'border-brand-indigo/[0.35] bg-brand-indigo/[0.055] shadow-[0_0_0_2px_rgba(113,112,255,0.28),0_20px_60px_-32px_rgba(79,70,229,0.55)] dark:border-brand-indigo/[0.45] dark:bg-brand-indigo/[0.10]'
       : '';

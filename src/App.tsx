@@ -239,8 +239,8 @@ const App: Vue.FC = () => {
   // Show loading state while store is hydrating.
   if (!hasHydrated || !runtimeReady) {
     return (
-      <div className="archive-loading flex min-h-screen items-center justify-center">
-        <div className="signal-loading-label">
+      <div className="flex min-h-screen items-center justify-center bg-[#f5f5f7] text-[#6e6e73]">
+        <div className="text-xs font-semibold uppercase tracking-[0.08em]">
           Loading...
         </div>
       </div>
@@ -252,24 +252,24 @@ const App: Vue.FC = () => {
   }
 
   return (
-      <div className="signal-app min-h-screen text-slate-950 lg:pl-[248px]">
+      <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] lg:pl-[272px]">
       <Header />
       <main className="mx-auto w-full max-w-[1720px] px-3 py-4 sm:px-5 sm:py-6 xl:px-8 xl:py-7">
-        <div className="signal-page-heading mb-5 flex min-h-12 min-w-0 flex-wrap items-end justify-between gap-4 px-1 sm:mb-7">
+        <div className="mb-5 flex min-h-12 min-w-0 flex-wrap items-end justify-between gap-4 border-b border-black/[0.12] px-1 pb-4 sm:mb-7">
           <div className="min-w-0 flex-1">
-            <div className="signal-page-kicker">{language === 'zh' ? '资料库 / 当前视图' : 'LIBRARY / CURRENT VIEW'}</div>
+            <div className="text-[11px] font-semibold text-[#86868b]">{language === 'zh' ? '资料库 / 当前视图' : 'LIBRARY / CURRENT VIEW'}</div>
             <h1 className="text-[1.75rem] font-bold leading-none tracking-[-0.035em] text-slate-950 sm:text-[2rem]">
               {language === 'zh' ? VIEW_LABELS[currentView].zh : VIEW_LABELS[currentView].en}
             </h1>
-              <p className="mt-2 text-xs font-medium text-slate-400 signal-page-subtitle">
+              <p className="mt-2 text-xs font-medium text-[#6e6e73]">
               {currentView === 'repositories'
                 ? (language === 'zh' ? `${repositories.length} 个已收藏仓库` : `${repositories.length} starred repositories`)
                 : (language === 'zh' ? 'Stars / Index 工作区' : 'Stars / Index workspace')}
             </p>
           </div>
-          <div className="signal-sync-status hidden max-w-full shrink-0 flex-wrap items-center gap-2 sm:flex">
-            <span className="signal-status-dot" />
-            <span className="signal-sync-label">{language === 'zh' ? '同步状态' : 'SYNC STATUS'}</span>
+          <div className="hidden max-w-full shrink-0 flex-wrap items-center gap-2 rounded-[10px] border border-black/[0.12] bg-white/[0.58] px-2.5 py-[9px] text-[11px] text-[#6e6e73] shadow-[0_1px_4px_rgba(0,0,0,.03)] sm:flex">
+            <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-[#34c759] shadow-[0_0_0_3px_rgba(52,199,89,.14)]" />
+            <span className="font-semibold">{language === 'zh' ? '同步状态' : 'SYNC STATUS'}</span>
             {lastSync
               ? (language === 'zh' ? `同步于 ${new Date(lastSync).toLocaleString()}` : `Synced ${new Date(lastSync).toLocaleString()}`)
               : (language === 'zh' ? '等待首次同步' : 'Waiting for first sync')}

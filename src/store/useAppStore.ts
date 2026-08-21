@@ -2026,8 +2026,8 @@ const vueAppStore = createPersistedVueStore<AppState & AppActions>(
           }
         }
 
-        // Version 14→15: switch to the focused eight-group taxonomy while
-        // preserving repository assignments from the previous taxonomies.
+        // Migrate legacy category preferences into the OSS Taxonomy vocabulary
+        // while preserving the closest available repository assignments.
         if (state) {
           state.hiddenDefaultCategoryIds = Array.isArray(state.hiddenDefaultCategoryIds)
             ? migrateCategoryIds(state.hiddenDefaultCategoryIds)
@@ -2041,7 +2041,7 @@ const vueAppStore = createPersistedVueStore<AppState & AppActions>(
           // Built-in overrides describe the old taxonomy and would otherwise
           // silently reintroduce old names/keywords into the new defaults.
           state.defaultCategoryOverrides = {};
-          console.log('Migrated to the focused built-in category taxonomy');
+          console.log('Migrated to the OSS Taxonomy category vocabulary');
         }
 
   // 初始化 embeddingConfigs

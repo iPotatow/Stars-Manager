@@ -3,6 +3,7 @@ import { Package, Plus, Trash2, Edit3, Save, X, Eye, EyeOff, GripVertical, Arrow
 import { useAppStore, getAllCategories, sortCategoriesByOrder } from '../../store/useAppStore';
 import { StepperInput } from '../ui/StepperInput';
 import { useDialog } from '../../hooks/useDialog';
+import { OSS_TAXONOMY_SOURCE, ossTaxonomy } from '../../constants/ossTaxonomy';
 
 interface CategoryPanelProps {
   t: (zh: string, en: string) => string;
@@ -272,6 +273,26 @@ export const CategoryPanel: Vue.FC<CategoryPanelProps> = ({ t }) => {
           <Plus className="w-4 h-4" />
           <span>{t('添加分类', 'Add Category')}</span>
         </button>
+      </div>
+
+      <div className="rounded-lg border border-black/[0.06] bg-light-surface p-4 dark:border-white/[0.06] dark:bg-white/[0.04]">
+        <p className="text-sm font-medium text-gray-900 dark:text-text-primary">
+          {t('内置分类来源', 'Built-in taxonomy source')}: OSS Taxonomy {ossTaxonomy.version}
+        </p>
+        <p className="mt-1 text-xs text-gray-500 dark:text-text-tertiary">
+          {t(
+            '完整采用 Domain、Role、Technology、Audience、Layer 与 Function 六个 facets；侧栏只显示当前有匹配结果的术语。',
+            'Uses the complete Domain, Role, Technology, Audience, Layer, and Function facets; the sidebar shows terms with current matches.'
+          )}
+        </p>
+        <a
+          href={OSS_TAXONOMY_SOURCE}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-2 inline-flex text-xs font-medium text-brand-violet hover:underline"
+        >
+          github.com/ecosyste-ms/oss-taxonomy
+        </a>
       </div>
 
       {/* 折叠侧边栏显示设置 */}

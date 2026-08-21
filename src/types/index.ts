@@ -313,6 +313,12 @@ export interface Category {
   keywords: string[];
   isCustom?: boolean;
   isHidden?: boolean;
+  /** OSS Taxonomy facet for built-in taxonomy terms. */
+  facet?: 'domain' | 'role' | 'technology' | 'audience' | 'layer' | 'function';
+  /** Canonical kebab-case term from the bundled OSS Taxonomy snapshot. */
+  taxonomyTerm?: string;
+  /** Upstream definition shown as supporting context in category UIs. */
+  description?: string;
 }
 
 export interface AssetFilter {

@@ -1,6 +1,26 @@
 import type { Category } from '../types';
+import {
+  buildOssTaxonomyKeywords,
+  formatOssTaxonomyTermName,
+  ossTaxonomy,
+  OSS_TAXONOMY_FACETS,
+} from './ossTaxonomy';
 
-/** The default taxonomy for organizing starred repositories. */
+const taxonomyCategories: Category[] = OSS_TAXONOMY_FACETS.flatMap(facet => (
+  ossTaxonomy[facet.id].map(term => ({
+    id: `oss:${facet.id}:${term.name}`,
+    name: term.name === 'networking'
+      ? `${formatOssTaxonomyTermName(term.name)} (${facet.label})`
+      : formatOssTaxonomyTermName(term.name),
+    icon: facet.icon,
+    keywords: buildOssTaxonomyKeywords([{ facet: facet.id, terms: [term.name] }]),
+    facet: facet.id,
+    taxonomyTerm: term.name,
+    description: term.description,
+  }))
+));
+
+/** Complete OSS Taxonomy snapshot, grouped by its six native facets. */
 export const defaultCategories: Category[] = [
   {
     id: 'all',
@@ -8,156 +28,60 @@ export const defaultCategories: Category[] = [
     icon: '📁',
     keywords: [],
   },
-  {
-    id: 'ai',
-    name: '人工智能',
-    icon: '🤖',
-    keywords: [
-      '人工智能', 'AI', 'artificial intelligence', '机器学习', 'machine learning',
-      '深度学习', 'deep learning', 'neural network', 'LLM', 'large language model',
-      'language model', '大模型', 'Agent', 'agent', '智能体', 'RAG',
-      'retrieval augmented generation', 'MCP', 'model context protocol', '生成式AI',
-      'generative AI', 'genai', 'AI应用', 'chatbot', 'copilot',
-    ],
-  },
-  {
-    id: 'development',
-    name: '开发技术',
-    icon: '💻',
-    keywords: [
-      '开发技术', '前端', '后端', '前后端', 'frontend', 'backend', 'fullstack',
-      'full-stack', 'web', 'website', 'api', 'framework', '框架', 'library', '库',
-      'sdk', '软件开发', 'software development', 'programming', '编程', 'javascript',
-      'typescript', 'python', 'java', 'go', 'rust', 'react', 'vue', 'angular',
-      'svelte', '数据库', 'database', 'sql', 'nosql', 'mongodb', 'mysql',
-      'postgresql', 'redis', '移动开发', 'mobile', 'android', 'ios', 'flutter',
-      'react-native', '桌面应用', 'desktop', 'electron', 'qt', 'gtk',
-    ],
-  },
-  {
-    id: 'tools',
-    name: '工具软件',
-    icon: '🛠️',
-    keywords: [
-      '工具软件', '开发工具', 'cli', 'command line', '命令行', 'terminal', '终端',
-      'shell', 'developer tool', 'devtools', 'utility', 'productivity', '效率',
-      '自动化', 'automation', 'workflow', '工作流', 'plugin', '插件', 'extension',
-      'editor', 'ide', 'notebook', 'todo', 'calendar', 'task',
-    ],
-  },
-  {
-    id: 'operations',
-    name: '运维部署',
-    icon: '🖥️',
-    keywords: [
-      '运维部署', 'docker', 'docker compose', 'container', '容器', 'kubernetes', 'k8s',
-      'server', '服务器', 'cloud', '云服务', 'self-hosted', 'self hosted', '自托管',
-      'devops', 'deployment', 'deploy', '部署', 'infrastructure', 'infra', '基础设施',
-      'hosting', 'homelab', 'linux', 'systemd', 'terraform', 'ansible', 'ci/cd',
-      'platform engineering',
-    ],
-  },
-  {
-    id: 'security',
-    name: '网络安全',
-    icon: '🔐',
-    keywords: [
-      '网络安全', '网络', 'network', 'proxy', '代理', 'security', '安全', 'privacy',
-      '隐私', 'encryption', '加密', 'auth', 'authentication', 'authorization',
-      'vulnerability', '漏洞', 'firewall', '防火墙', 'vpn', 'tls', 'ssl', 'pentest',
-      '渗透测试', 'malware', '恶意软件', 'zero trust',
-    ],
-  },
-  {
-    id: 'design',
-    name: '设计资源',
-    icon: '🎨',
-    keywords: [
-      '设计资源', 'ui', 'ux', 'user interface', 'user experience', 'component', '组件',
-      'icon', '图标', 'design', '设计', 'graphics', 'graphic', 'visual', 'illustration',
-      '插画', 'theme', '主题', 'template', '模板', 'css', 'tailwind', 'figma',
-    ],
-  },
-  {
-    id: 'learning',
-    name: '学习资源',
-    icon: '📚',
-    keywords: [
-      '学习资源', '教程', 'tutorial', 'awesome', '书籍', 'book', 'books', '知识库',
-      'knowledge base', 'learning', 'education', 'course', '课程', 'docs', 'documentation',
-      'reference', 'guide', '指南', 'article', '文章', 'cheatsheet', 'study',
-    ],
-  },
-  {
-    id: 'creative',
-    name: '创意收藏',
-    icon: '💡',
-    keywords: [
-      '创意收藏', '有趣项目', 'interesting project', 'interesting', 'demo', '演示',
-      '实验', 'experiment', 'experimental', 'inspiration', '灵感', 'creative', '创意',
-      'showcase', 'playground', 'prototype', '原型', 'game', '游戏', 'interactive',
-      '互动', 'art', '艺术',
-    ],
-  },
+  ...taxonomyCategories,
 ];
 
 const categoryTranslations: Record<string, string> = {
   '全部分类': 'All Categories',
-  '人工智能': 'Artificial Intelligence',
-  '开发技术': 'Development',
-  '工具软件': 'Tools & Software',
-  '运维部署': 'Operations & Deployment',
-  '网络安全': 'Network Security',
-  '设计资源': 'Design Resources',
-  '学习资源': 'Learning Resources',
-  '创意收藏': 'Creative Finds',
 };
 
 export const translateCategoryName = (name: string): string => categoryTranslations[name] ?? name;
 
 export const getDefaultCategoryNames = (language: 'zh' | 'en' = 'zh'): string[] => (
-  defaultCategories.map(category => language === 'en' ? translateCategoryName(category.name) : category.name)
+  defaultCategories
+    .filter(category => category.id !== 'all')
+    .map(category => category.taxonomyTerm ?? (language === 'en' ? translateCategoryName(category.name) : category.name))
 );
 
 /** Preserve saved preferences and repository assignments when the taxonomy changes. */
 const legacyCategoryIdMap: Record<string, string> = {
   all: 'all',
-  web: 'development',
-  mobile: 'development',
-  desktop: 'development',
-  database: 'development',
-  ai: 'ai',
-  devtools: 'tools',
-  security: 'security',
-  game: 'creative',
-  design: 'design',
-  productivity: 'tools',
-  education: 'learning',
-  social: 'creative',
-  analytics: 'development',
-  development: 'development',
-  tools: 'tools',
-  operations: 'operations',
-  learning: 'learning',
-  creative: 'creative',
-  frontend: 'development',
-  backend: 'development',
-  systems: 'operations',
-  data: 'development',
-  intelligence: 'ai',
-  delivery: 'operations',
-  games: 'creative',
-  automation: 'tools',
-  community: 'creative',
-  general: 'tools',
-  inbox: 'tools',
-  build: 'development',
-  learn: 'learning',
-  adopt: 'tools',
-  watch: 'creative',
-  reference: 'learning',
-  create: 'creative',
-  archive: 'tools',
+  web: 'oss:domain:web-development',
+  mobile: 'oss:domain:mobile-development',
+  desktop: 'oss:domain:desktop-development',
+  database: 'oss:domain:database',
+  ai: 'oss:domain:machine-learning',
+  devtools: 'oss:audience:developer',
+  security: 'oss:domain:security',
+  game: 'oss:domain:game-development',
+  design: 'oss:audience:designer',
+  productivity: 'oss:role:application',
+  education: 'oss:domain:education',
+  social: 'oss:audience:end-user',
+  analytics: 'oss:domain:data-science',
+  development: 'oss:audience:developer',
+  tools: 'oss:role:application',
+  operations: 'oss:domain:devops',
+  learning: 'oss:domain:education',
+  creative: 'oss:audience:hobbyist',
+  frontend: 'oss:layer:frontend',
+  backend: 'oss:layer:backend',
+  systems: 'oss:layer:operating-system',
+  data: 'oss:domain:data-science',
+  intelligence: 'oss:domain:machine-learning',
+  delivery: 'oss:domain:devops',
+  games: 'oss:domain:game-development',
+  automation: 'oss:function:automation',
+  community: 'oss:audience:end-user',
+  general: 'oss:role:application',
+  inbox: 'oss:role:application',
+  build: 'oss:role:build-tool',
+  learn: 'oss:domain:education',
+  adopt: 'oss:role:application',
+  watch: 'oss:audience:hobbyist',
+  reference: 'oss:function:documentation',
+  create: 'oss:audience:hobbyist',
+  archive: 'oss:role:application',
 };
 
 /** Names from prior local versions, used only for persisted-data migration. */
@@ -266,7 +190,18 @@ export const migrateCategoryIds = (ids: string[]): string[] => (
 
 export const migrateCategoryName = (name: string | undefined): string | undefined => {
   if (name == null) return name;
-  return legacyCategoryNameMap[name] ?? name;
+  const legacyName = legacyCategoryNameMap[name] ?? name;
+  const formerCategoryTargets: Record<string, string> = {
+    '人工智能': 'Machine Learning',
+    '开发技术': 'Developer',
+    '工具软件': 'Application',
+    '运维部署': 'DevOps',
+    '网络安全': 'Security',
+    '设计资源': 'Designer',
+    '学习资源': 'Education',
+    '创意收藏': 'Hobbyist',
+  };
+  return formerCategoryTargets[legacyName] ?? legacyName;
 };
 
 export const migrateRepositoryCategory = <T extends { custom_category?: string | null }>(repository: T): T => {

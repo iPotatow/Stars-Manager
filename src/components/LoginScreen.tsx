@@ -98,14 +98,14 @@ export const LoginScreen: Vue.FC = () => {
   };
 
   return (
-    <main className="signal-login">
-      <header className="signal-login-header">
-        <div className="signal-login-wordmark"><span aria-hidden="true">S</span><strong>STARS MANAGER</strong></div>
-        <div className="signal-login-tools">
-          <span className="signal-live-mark"><i /> {t('Cloudflare', 'CLOUDFLARE')}</span>
-          <div className="signal-language-toggle" aria-label={t('语言', 'Language')}>
+    <main className="min-h-screen bg-[#f5f5f7] px-[clamp(18px,5vw,80px)] pb-[42px] text-[#1d1d1f] max-[760px]:px-4 max-[760px]:pb-7">
+      <header className="sticky top-0 z-20 flex min-h-[72px] items-center justify-between border-b border-black/[0.12] bg-white/[0.68] backdrop-blur-xl backdrop-saturate-150 max-[760px]:min-h-16">
+        <div className="flex items-center gap-2.5"><span className="inline-flex h-8 w-8 items-center justify-center rounded-[9px] bg-[#1d1d1f] text-base font-bold tracking-[-0.04em] text-white" aria-hidden="true">S</span><strong className="text-xs font-bold leading-[1.2] tracking-[0.08em] text-[#1d1d1f]">STARS MANAGER</strong></div>
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5 text-[11px] font-semibold text-[#6e6e73] max-[760px]:hidden"><i className="h-[7px] w-[7px] rounded-full bg-[#34c759] shadow-[0_0_0_3px_rgba(52,199,89,.13)]" /> {t('Cloudflare', 'CLOUDFLARE')}</span>
+          <div className="flex rounded-[9px] bg-black/[0.055] p-0.5" aria-label={t('语言', 'Language')}>
             {(['zh', 'en'] as const).map((locale) => (
-              <button key={locale} type="button" onClick={() => setLanguage(locale)} className={language === locale ? 'is-active' : ''}>
+              <button key={locale} type="button" onClick={() => setLanguage(locale)} className={`min-w-[35px] rounded-[7px] px-2 py-1.5 text-xs font-medium text-[#6e6e73] transition-[background-color,color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0071e3]/30 ${language === locale ? 'bg-white text-[#1d1d1f] shadow-[0_1px_4px_rgba(0,0,0,.12)]' : ''}`}>
                 {locale === 'zh' ? '中文' : 'EN'}
               </button>
             ))}
@@ -113,34 +113,34 @@ export const LoginScreen: Vue.FC = () => {
         </div>
       </header>
 
-      <div className="signal-login-grid">
-        <section className="signal-login-intro">
-          <div className="signal-intro-blocks" aria-hidden="true"><span /><span /><span /></div>
-          <h1>{language === 'zh' ? <>管理你的 GitHub<br />收藏。</> : <>Manage your GitHub<br />stars.</>}</h1>
+      <div className="mx-auto grid min-h-[calc(100vh-114px)] max-w-[1160px] grid-cols-[minmax(0,1fr)_minmax(320px,470px)] items-center gap-[clamp(50px,9vw,150px)] max-[760px]:flex max-[760px]:min-h-0 max-[760px]:flex-col max-[760px]:justify-center max-[760px]:gap-[38px] max-[760px]:pb-6 max-[760px]:pt-[54px]">
+        <section className="max-w-[600px]">
+          <div className="hidden" aria-hidden="true"><span /><span /><span /></div>
+          <h1 className="mb-6 text-[clamp(44px,5.5vw,72px)] font-bold leading-[1.02] tracking-[-0.055em] text-[#1d1d1f] max-[760px]:text-[clamp(42px,12vw,60px)] max-[760px]:break-words">{language === 'zh' ? <>管理你的 GitHub<br />收藏。</> : <>Manage your GitHub<br />stars.</>}</h1>
         </section>
 
-        <section className="signal-login-panel">
-          <div className="signal-panel-bar"><span>{step === 'credentials' ? '01' : '02'}</span><span>{step === 'credentials' ? t('验证工作区', 'VERIFY WORKSPACE') : t('连接资料源', 'CONNECT SOURCE')}</span></div>
-          <h2>{step === 'credentials' ? t('登录 Stars Manager', 'Sign in to Stars Manager') : t('连接 GitHub', 'Connect GitHub')}</h2>
-          <p className="signal-panel-description">
+        <section className="animate-material-in rounded-[18px] border border-black/[0.16] bg-white/[0.78] p-[28px_clamp(24px,3vw,34px)_30px] shadow-[0_18px_48px_rgba(0,0,0,.08),0_2px_8px_rgba(0,0,0,.04)] backdrop-blur-2xl backdrop-saturate-150 max-[760px]:w-full max-[760px]:rounded-2xl max-[760px]:px-5 max-[760px]:pb-[26px] max-[760px]:pt-6">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-[#86868b]"><span className="rounded-md bg-[#0071e3]/10 px-[7px] py-1 text-[#0071e3]">{step === 'credentials' ? '01' : '02'}</span><span>{step === 'credentials' ? t('验证工作区', 'VERIFY WORKSPACE') : t('连接资料源', 'CONNECT SOURCE')}</span></div>
+          <h2 className="mb-[9px] mt-[18px] text-[30px] font-semibold leading-[1.12] tracking-[-0.035em] text-[#1d1d1f]">{step === 'credentials' ? t('登录 Stars Manager', 'Sign in to Stars Manager') : t('连接 GitHub', 'Connect GitHub')}</h2>
+          <p className="text-sm leading-[1.55] text-[#6e6e73] max-[760px]:break-words">
             {step === 'credentials'
               ? t('输入工作区账号。', 'Enter your workspace credentials.')
               : t('输入 GitHub token。', 'Enter your GitHub token.')}
           </p>
 
           {repositories.length > 0 && lastSync ? (
-            <div className="signal-cached-note" role="status">
-              <span className="signal-status-dot" />
+            <div className="mb-5 flex flex-wrap items-center gap-2 rounded-lg border-l-[3px] border-[#34c759] bg-[#34c759]/[0.08] px-3 py-[11px] text-sm text-[#1d1d1f]" role="status">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-[#34c759] shadow-[0_0_0_3px_rgba(52,199,89,.14)]" />
               <span>{t(`已缓存 ${repositories.length} 个仓库`, `${repositories.length} repositories cached`)}</span>
-              <small>{t('上次同步', 'Last sync')}: {new Date(lastSync).toLocaleString()}</small>
+              <small className="basis-full pl-[14px] text-xs text-[#6e6e73]">{t('上次同步', 'Last sync')}: {new Date(lastSync).toLocaleString()}</small>
             </div>
           ) : null}
 
           {step === 'credentials' ? (
             <>
-              <label htmlFor="workspace-username" className="signal-field-label">Workspace username</label>
-              <div className="signal-token-field">
-                <UserRound aria-hidden="true" />
+              <label htmlFor="workspace-username" className="mb-[7px] block text-xs text-[#6e6e73]">Workspace username</label>
+              <div className="group flex min-h-12 items-center gap-2.5 rounded-[10px] border border-black/[0.12] bg-white/[0.74] px-3 transition-[background-color,border-color,box-shadow] duration-200 focus-within:border-[#0071e3]/65 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#0071e3]/10">
+                <UserRound className="h-4 w-4 text-[#86868b]" aria-hidden="true" />
                 <input
                   id="workspace-username"
                   type="text"
@@ -151,12 +151,13 @@ export const LoginScreen: Vue.FC = () => {
                   disabled={isLoading}
                   autoComplete="username"
                   autoFocus
+                  className="h-12 min-w-0 flex-1 border-0 bg-transparent font-mono text-[13px] text-[#1d1d1f] outline-none placeholder:text-[#86868b]"
                 />
               </div>
 
-              <label htmlFor="workspace-password" className="signal-field-label">Workspace password</label>
-              <div className="signal-token-field">
-                <Key aria-hidden="true" />
+              <label htmlFor="workspace-password" className="mb-[7px] mt-4 block text-xs text-[#6e6e73]">Workspace password</label>
+              <div className="group flex min-h-12 items-center gap-2.5 rounded-[10px] border border-black/[0.12] bg-white/[0.74] px-3 transition-[background-color,border-color,box-shadow] duration-200 focus-within:border-[#0071e3]/65 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#0071e3]/10">
+                <Key className="h-4 w-4 text-[#86868b]" aria-hidden="true" />
                 <input
                   id="workspace-password"
                   type="password"
@@ -166,27 +167,28 @@ export const LoginScreen: Vue.FC = () => {
                   onKeyDown={(event) => void handleKeyPress(event, 'login')}
                   disabled={isLoading}
                   autoComplete="current-password"
+                  className="h-12 min-w-0 flex-1 border-0 bg-transparent font-mono text-[13px] text-[#1d1d1f] outline-none placeholder:text-[#86868b]"
                 />
               </div>
 
-              {error ? <div role="alert" className="signal-error"><AlertCircle aria-hidden="true" /><p>{error}</p></div> : null}
+              {error ? <div role="alert" className="mt-3 flex items-start gap-2 rounded-[9px] bg-[#ff3b30]/[0.09] px-3 py-2.5 text-sm leading-[1.5] text-[#c9342b]"><AlertCircle className="mt-px h-[15px] w-[15px] shrink-0" aria-hidden="true" /><p className="m-0">{error}</p></div> : null}
 
-              <button type="button" onClick={() => void handleLogin()} disabled={isLoading || !username.trim() || !password} className="signal-connect-button">
-                {isLoading ? <><span className="signal-spinner" />{t('验证中…', 'Verifying…')}</> : <>{t('登录工作区', 'Sign in')}<ArrowRight aria-hidden="true" /></>}
+              <button type="button" onClick={() => void handleLogin()} disabled={isLoading || !username.trim() || !password} className="mt-3.5 flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border-0 bg-[#0071e3] text-sm font-semibold text-white shadow-[0_2px_5px_rgba(0,113,227,.24)] transition-[background-color,box-shadow,transform] duration-200 hover:bg-[#0077ed] hover:shadow-[0_4px_10px_rgba(0,113,227,.27)] active:scale-[.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0071e3]/35 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:border disabled:border-[#d1d1d6] disabled:bg-[#e5e5ea] disabled:text-[#636366] disabled:shadow-none">
+                {isLoading ? <><span className="h-[15px] w-[15px] animate-spin rounded-full border-2 border-white/35 border-t-white" />{t('验证中…', 'Verifying…')}</> : <>{t('登录工作区', 'Sign in')}<ArrowRight className="h-4 w-4" aria-hidden="true" /></>}
               </button>
             </>
           ) : (
             <>
               {hasStoredToken ? (
-                <div className="signal-cached-note" role="status">
-                  <span className="signal-status-dot" />
+                <div className="mb-5 flex flex-wrap items-center gap-2 rounded-lg border-l-[3px] border-[#34c759] bg-[#34c759]/[0.08] px-3 py-[11px] text-sm text-[#1d1d1f]" role="status">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-[#34c759] shadow-[0_0_0_3px_rgba(52,199,89,.14)]" />
                   <span>{t('D1 中已有 GitHub token，可输入新 token 替换。', 'A GitHub token is already stored in D1; enter a new one to replace it.')}</span>
                 </div>
               ) : null}
 
-              <label htmlFor="github-token" className="signal-field-label">GitHub Personal Access Token</label>
-              <div className="signal-token-field">
-                <Key aria-hidden="true" />
+              <label htmlFor="github-token" className="mb-[7px] block text-xs text-[#6e6e73]">GitHub Personal Access Token</label>
+              <div className="group flex min-h-12 items-center gap-2.5 rounded-[10px] border border-black/[0.12] bg-white/[0.74] px-3 transition-[background-color,border-color,box-shadow] duration-200 focus-within:border-[#0071e3]/65 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#0071e3]/10">
+                <Key className="h-4 w-4 text-[#86868b]" aria-hidden="true" />
                 <input
                   id="github-token"
                   type="password"
@@ -197,13 +199,14 @@ export const LoginScreen: Vue.FC = () => {
                   disabled={isLoading}
                   autoComplete="off"
                   autoFocus
+                  className="h-12 min-w-0 flex-1 border-0 bg-transparent font-mono text-[13px] text-[#1d1d1f] outline-none placeholder:text-[#86868b]"
                 />
               </div>
 
-              {error ? <div role="alert" className="signal-error"><AlertCircle aria-hidden="true" /><p>{error}</p></div> : null}
+              {error ? <div role="alert" className="mt-3 flex items-start gap-2 rounded-[9px] bg-[#ff3b30]/[0.09] px-3 py-2.5 text-sm leading-[1.5] text-[#c9342b]"><AlertCircle className="mt-px h-[15px] w-[15px] shrink-0" aria-hidden="true" /><p className="m-0">{error}</p></div> : null}
 
-              <button type="button" onClick={() => void handleConnectGitHub()} disabled={isLoading || !token.trim()} className="signal-connect-button">
-                {isLoading ? <><span className="signal-spinner" />{t('连接中…', 'Connecting…')}</> : <>{t('连接到 GitHub', 'Connect to GitHub')}<ArrowRight aria-hidden="true" /></>}
+              <button type="button" onClick={() => void handleConnectGitHub()} disabled={isLoading || !token.trim()} className="mt-3.5 flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border-0 bg-[#0071e3] text-sm font-semibold text-white shadow-[0_2px_5px_rgba(0,113,227,.24)] transition-[background-color,box-shadow,transform] duration-200 hover:bg-[#0077ed] hover:shadow-[0_4px_10px_rgba(0,113,227,.27)] active:scale-[.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0071e3]/35 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:border disabled:border-[#d1d1d6] disabled:bg-[#e5e5ea] disabled:text-[#636366] disabled:shadow-none">
+                {isLoading ? <><span className="h-[15px] w-[15px] animate-spin rounded-full border-2 border-white/35 border-t-white" />{t('连接中…', 'Connecting…')}</> : <>{t('连接到 GitHub', 'Connect to GitHub')}<ArrowRight className="h-4 w-4" aria-hidden="true" /></>}
               </button>
 
               <a
