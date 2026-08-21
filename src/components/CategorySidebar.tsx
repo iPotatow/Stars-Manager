@@ -8,11 +8,18 @@ import {
   ChevronRight,
   FolderKanban,
   Globe2,
-  Shapes,
-  Cpu,
+  Smartphone,
+  Monitor,
+  Database,
+  Bot,
+  Wrench,
+  Shield,
+  Gamepad2,
+  Palette,
+  Zap,
+  BookOpen,
   Users,
-  Layers3,
-  ListChecks,
+  BarChart3,
 } from '@lucide/vue';
 import { Category, Repository } from '../types';
 import { useAppStore, getAllCategories, sortCategoriesByOrder } from '../store/useAppStore';
@@ -20,7 +27,6 @@ import { CategoryEditModal } from './CategoryEditModal';
 import { forceSyncToBackend } from '../services/autoSync';
 import { getAICategory, getDefaultCategory, computeCustomCategory, matchesCategory } from '../utils/categoryUtils';
 import { useDialog } from '../hooks/useDialog';
-import { OSS_TAXONOMY_FACETS, type OssTaxonomyFacet } from '../constants/ossTaxonomy';
 
 interface CategorySidebarProps {
   repositories: Repository[];
@@ -30,16 +36,23 @@ interface CategorySidebarProps {
 
 const CATEGORY_ICONS: Record<string, Vue.ComponentType<{ className?: string }>> = {
   all: FolderKanban,
-  domain: Globe2,
-  role: Shapes,
-  technology: Cpu,
-  audience: Users,
-  layer: Layers3,
-  function: ListChecks,
+  web: Globe2,
+  mobile: Smartphone,
+  desktop: Monitor,
+  database: Database,
+  ai: Bot,
+  devtools: Wrench,
+  security: Shield,
+  game: Gamepad2,
+  design: Palette,
+  productivity: Zap,
+  education: BookOpen,
+  social: Users,
+  analytics: BarChart3,
 };
 
 const CategoryGlyph = ({ category, className = 'h-4 w-4' }: { category: Category; className?: string }) => {
-  const Icon = CATEGORY_ICONS[category.id === 'all' ? 'all' : category.facet ?? 'custom'] ?? FolderKanban;
+  const Icon = CATEGORY_ICONS[category.id] ?? FolderKanban;
   return <Icon className={className} />;
 };
 
@@ -209,21 +222,14 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
     return categoryCounts.get(category.id) ?? 0;
   }, [categoryCounts]);
 
-  // The upstream taxonomy contains 201 terms. Keep the sidebar focused on
-  // terms that currently match repositories, while selectors/settings retain
-  // the complete vocabulary.
+  // Keep the sidebar focused on built-in categories that currently match
+  // repositories, while selectors/settings retain the complete vocabulary.
   const sidebarCategories = useMemo(() => allCategories.filter(category => (
     category.id === 'all'
     || category.isCustom
     || category.id === selectedCategory
     || (categoryCounts.get(category.id) ?? 0) > 0
   )), [allCategories, categoryCounts, selectedCategory]);
-
-  const getFacetLabel = (facet: OssTaxonomyFacet): string => {
-    const definition = OSS_TAXONOMY_FACETS.find(item => item.id === facet);
-    if (!definition) return facet;
-    return language === 'zh' ? `${definition.labelZh} · ${definition.label}` : definition.label;
-  };
 
   const handleAddCategory = () => {
     setIsCreatingCategory(true);
@@ -358,7 +364,7 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
         <div className="gsm-panel-soft w-full overflow-hidden p-3 sm:p-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-bold tracking-[-0.02em] text-slate-950 dark:text-white">
-              {t('OSS 分类', 'OSS Taxonomy')}
+              {t('分类', 'Categories')}
             </h3>
             <button
               onClick={handleAddCategory}
@@ -527,7 +533,7 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
                       showText ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'
                     }`}
                   >
-                    {t('OSS 分类', 'OSS Taxonomy')}
+                    {t('分类', 'Categories')}
                   </h3>
                   <div className="flex items-center gap-1">
                     <button
@@ -561,16 +567,9 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
                     const count = getCategoryCount(category);
                     const isSelected = selectedCategory === category.id;
                     const isDragTarget = dragOverCategoryId === category.id;
-                    const previousCategory = sidebarCategories[index - 1];
-                    const showFacetHeading = category.facet && previousCategory?.facet !== category.facet;
 
                     return (
                       <div key={category.id}>
-                        {showFacetHeading && category.facet && (
-                          <div className="px-3 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
-                            {getFacetLabel(category.facet)}
-                          </div>
-                        )}
                         <div
                           className="group relative"
                           style={{
@@ -627,19 +626,17 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
                         {/* 操作按钮 - 绝对定位，hover/focus-within 时显示，不占位 */}
                         {category.id !== 'all' && (
                           <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto">
-                            {!category.facet && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleEditCategory(category);
-                                }}
-                                className="p-1 rounded-md hover:bg-gray-200 dark:hover:bg-white/10 dark:text-text-secondary"
-                                title={t('编辑分类', 'Edit category')}
-                                aria-label={t('编辑分类', 'Edit category')}
-                              >
-                                <Edit3 className="w-3.5 h-3.5" />
-                              </button>
-                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditCategory(category);
+                              }}
+                              className="p-1 rounded-md hover:bg-gray-200 dark:hover:bg-white/10 dark:text-text-secondary"
+                              title={t('编辑分类', 'Edit category')}
+                              aria-label={t('编辑分类', 'Edit category')}
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
                             {category.isCustom ? (
                               <button
                                 onClick={(e) => {

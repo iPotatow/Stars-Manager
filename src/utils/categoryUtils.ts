@@ -16,7 +16,7 @@ const normalizeMatchText = (value: string): string => value
 
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-/** Match complete taxonomy terms instead of arbitrary substrings (`ai` must not match `tailwind`). */
+/** Match complete short terms instead of arbitrary substrings (`ai` must not match `tailwind`). */
 const textContainsTerm = (text: string, term: string): boolean => {
   const normalizedText = normalizeMatchText(text);
   const normalizedTerm = normalizeMatchText(term);

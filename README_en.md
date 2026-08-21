@@ -21,7 +21,7 @@ Stars Manager is a GitHub Star manager running on Cloudflare. One Worker serves 
 
 The default sidebar groups repositories by use case: Artificial Intelligence (LLM, Agent, RAG, MCP, and AI applications), Development (frontend/backend, frameworks, libraries, SDKs, and databases), Tools & Software (CLI, developer tools, productivity software, and automation), Operations & Deployment (Docker, servers, cloud services, and self-hosting), Network Security (networking, proxies, security, and privacy), Design Resources (UI, components, icons, and design), Learning Resources (tutorials, Awesome lists, books, and knowledge bases), and Creative Finds (interesting projects, demos, experiments, and inspiration). AI analysis uses repository metadata, Topics, and README content to assign application-type tags; languages and finer-grained topics remain available through tags, language, and search filters.
 
-This version is designed around a single Cloudflare Worker runtime, with an application-owned authentication boundary, data model, visual theme, and repository taxonomy.
+This version is designed around a single Cloudflare Worker runtime, with an application-owned authentication boundary, data model, visual theme, and repository classification model.
 
 ## Architecture
 

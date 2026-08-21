@@ -55,6 +55,7 @@ import {
   translateCategoryName,
   migrateCategoryId,
   migrateCategoryIds,
+  migrateCategoryName,
   migrateRepositoryCategory,
 } from '../constants/repositoryCategories';
 
@@ -2026,8 +2027,8 @@ const vueAppStore = createPersistedVueStore<AppState & AppActions>(
           }
         }
 
-        // Migrate legacy category preferences into the OSS Taxonomy vocabulary
-        // while preserving the closest available repository assignments.
+        // Migrate legacy category preferences into the current built-in
+        // application categories while preserving the closest assignments.
         if (state) {
           state.hiddenDefaultCategoryIds = Array.isArray(state.hiddenDefaultCategoryIds)
             ? migrateCategoryIds(state.hiddenDefaultCategoryIds)
@@ -2038,10 +2039,20 @@ const vueAppStore = createPersistedVueStore<AppState & AppActions>(
           if (typeof state.selectedCategory === 'string') {
             state.selectedCategory = migrateCategoryId(state.selectedCategory);
           }
-          // Built-in overrides describe the old taxonomy and would otherwise
-          // silently reintroduce old names/keywords into the new defaults.
-          state.defaultCategoryOverrides = {};
-          console.log('Migrated to the OSS Taxonomy category vocabulary');
+          const existingOverrides = state.defaultCategoryOverrides && typeof state.defaultCategoryOverrides === 'object'
+            ? state.defaultCategoryOverrides
+            : {};
+          const migratedOverrides: Record<string, Partial<Category>> = {};
+          for (const [categoryId, override] of Object.entries(existingOverrides)) {
+            const migratedId = migrateCategoryId(categoryId);
+            if (!defaultCategories.some(category => category.id === migratedId)) continue;
+            migratedOverrides[migratedId] = {
+              ...override,
+              ...(override.name ? { name: migrateCategoryName(override.name) } : {}),
+            };
+          }
+          state.defaultCategoryOverrides = migratedOverrides;
+          console.log('Migrated legacy category preferences');
         }
 
   // 初始化 embeddingConfigs

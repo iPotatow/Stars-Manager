@@ -100,7 +100,7 @@ describe('getEffectiveTags', () => {
 });
 
 describe('matchesCategory', () => {
-  it('does not match short ASCII taxonomy terms inside unrelated words', () => {
+  it('does not match short ASCII category terms inside unrelated words', () => {
     const repository = {
       ...baseRepository,
       description: 'A Tailwind component maintained by the community',

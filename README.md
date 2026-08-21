@@ -22,9 +22,9 @@ Stars Manager 是一个运行在 Cloudflare 上的 GitHub Star 管理台。React
 
 ## 分类逻辑
 
-仓库分类直接使用 [ecosyste-ms/oss-taxonomy](https://github.com/ecosyste-ms/oss-taxonomy)，按其原生的 Domain、Role、Technology、Audience、Layer 和 Function 六个 facets 组织。项目内置完整的版本化 JSON 快照；AI 分析优先返回其中的规范化英文术语，GitHub Topics、仓库描述和 README 用作匹配证据。
+仓库使用一组固定的中文应用类型分类：Web 应用、移动应用、桌面应用、数据库、AI/机器学习、开发工具、安全工具、游戏、设计工具、效率工具、教育学习、社交网络和数据分析。每个分类配有可维护的关键词，用于匹配 GitHub Topics、仓库描述、编程语言和 README。
 
-侧栏只展示当前有仓库命中的术语，并按 facet 分组；完整词表仍可用于筛选和手动分类。用户手动锁定的分类与显式无分类状态不会被后续 AI 分析覆盖。快照版本、上游提交和更新方式见 [docs/oss-taxonomy.md](docs/oss-taxonomy.md)。
+AI 分析会生成 3-5 个应用类型标签，平台信息（Web、CLI、macOS、Windows、Linux、iOS、Android、Docker）单独保存。用户手动锁定的分类与显式无分类状态不会被后续 AI 分析覆盖；固定分类可以编辑关键词，也可以添加自定义分类。
 
 ## 产品边界
 

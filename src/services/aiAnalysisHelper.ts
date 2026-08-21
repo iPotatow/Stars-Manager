@@ -46,7 +46,7 @@ export const analyzeRepository = async (options: AnalyzeRepositoryOptions): Prom
 
   const categoryNames = categories
     .filter(cat => cat.id !== 'all')
-    .map(cat => cat.taxonomyTerm ?? cat.name);
+    .map(cat => cat.name);
 
   onProgress?.('Analyzing with AI...');
   const categoryHints = buildCategoryHints(categories);
@@ -82,8 +82,8 @@ export const getDefaultCategoryNames = (customCategories: Category[], language: 
     ...customNames,
     ...defaultCategories
       .filter(category => category.id !== 'all')
-      .map(category => category.taxonomyTerm ?? (language === 'zh'
+      .map(category => language === 'zh'
         ? category.name
-        : translateCategoryName(category.name))),
+        : translateCategoryName(category.name)),
   ];
 };

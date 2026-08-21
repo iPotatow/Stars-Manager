@@ -3,7 +3,6 @@ import { Check } from '@lucide/vue';
 import { Modal } from './Modal';
 import { Repository } from '../types';
 import { useAppStore, getAllCategories } from '../store/useAppStore';
-import { OSS_TAXONOMY_FACETS } from '../constants/ossTaxonomy';
 
 interface BulkCategorizeModalProps {
   isOpen: boolean;
@@ -29,7 +28,7 @@ export const BulkCategorizeModal: Vue.FC<BulkCategorizeModalProps> = ({
     return allCategories.filter(category => {
       if (category.id === 'all') return false;
       if (!query) return true;
-      return [category.name, category.taxonomyTerm, category.description, ...(category.keywords ?? [])]
+      return [category.name, ...(category.keywords ?? [])]
         .filter(Boolean)
         .some(value => String(value).toLowerCase().includes(query));
     });
@@ -84,14 +83,12 @@ export const BulkCategorizeModal: Vue.FC<BulkCategorizeModalProps> = ({
             type="search"
             value={categoryQuery}
             onInput={(event) => setCategoryQuery(event.currentTarget.value)}
-            placeholder={t('搜索 OSS Taxonomy 术语…', 'Search OSS Taxonomy terms…')}
+            placeholder={t('搜索分类…', 'Search categories…')}
             className="mb-3 w-full rounded-lg border border-black/[0.06] bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-brand-violet dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-text-primary"
           />
 
           <div className="max-h-64 overflow-y-auto space-y-2">
-            {filteredCategories.map(category => {
-              const facet = OSS_TAXONOMY_FACETS.find(item => item.id === category.facet);
-              return (
+            {filteredCategories.map(category => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
@@ -106,18 +103,13 @@ export const BulkCategorizeModal: Vue.FC<BulkCategorizeModalProps> = ({
                     <span className="block text-sm font-medium text-gray-900 dark:text-text-primary">
                       {category.name}
                     </span>
-                    {facet && (
-                      <span className="block text-xs text-gray-500 dark:text-text-tertiary">
-                        {language === 'zh' ? `${facet.labelZh} · ${facet.label}` : facet.label}
-                      </span>
-                    )}
                   </div>
                 </div>
                 {selectedCategory === category.id && (
                   <Check className="w-5 h-5 text-brand-violet" />
                 )}
               </button>
-            );})}
+            ))}
           </div>
         </div>
 
