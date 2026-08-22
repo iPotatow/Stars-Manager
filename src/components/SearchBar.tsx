@@ -821,104 +821,110 @@ export const SearchBar: Vue.FC = () => {
     <Card class="relative z-20 mb-5 border-border/70 p-3 sm:p-4">
       {/* Search Input */}
       <div className="relative z-40 mb-3">
-        <Search className="absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
-        <Input
-          ref={searchInputRef}
-          type="text"
-          placeholder={t(
-            "搜索仓库",
-            "Search repositories"
-          )}
-          value={searchQuery}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-          onCompositionstart={handleCompositionStart}
-          onCompositionend={handleCompositionEnd}
-          class="h-12 pl-11 pr-24 text-[13px] sm:pr-44"
-        />
+        <div className="search-input-shell relative h-12">
+          <Search
+            aria-hidden="true"
+            class="pointer-events-none absolute left-3.5 top-1/2 z-10 h-[18px] w-[18px] -translate-y-1/2 text-slate-400"
+          />
+          <Input
+            ref={searchInputRef}
+            type="text"
+            placeholder={t(
+              "搜索仓库",
+              "Search repositories"
+            )}
+            value={searchQuery}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+            onCompositionstart={handleCompositionStart}
+            onCompositionend={handleCompositionEnd}
+            class="absolute inset-0 h-12 w-full pl-11 pr-24 text-[13px] sm:pr-44"
+          />
 
-        {/* Search History Dropdown */}
-        {showSearchHistory && searchHistory.length > 0 && (
-          <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-slate-200/90 bg-white p-1.5 shadow-[0_20px_55px_rgba(15,23,42,0.18)] dark:border-white/[0.08] dark:bg-[#151e2f]">
-            <div className="p-2 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-900 dark:text-text-secondary">
-                {t('搜索历史', 'Search History')}
+          <div className="absolute right-2 top-1/2 flex max-w-[calc(100%-16px)] -translate-y-1/2 items-center gap-1 sm:gap-2">
+            {searchQuery && (
+              <button
+                onClick={handleClearSearch}
+                className="p-1.5 text-gray-400 dark:text-text-quaternary hover:text-gray-700 dark:text-text-secondary dark:hover:text-gray-300 transition-colors"
+                title={t('清除搜索', 'Clear search')}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+            <Button
+              onClick={handleAISearch}
+              disabled={isSearching}
+              class="h-9 px-3 py-2 text-xs sm:px-4"
+              title={activeAIConfig
+                ? t('使用配置的 AI 服务搜索并重排结果', 'Use the configured AI service to search and rerank results')
+                : t('使用本地排序规则搜索', 'Search with local ranking rules')}
+            >
+              <Bot className="w-4 h-4" />
+              <span className="hidden sm:inline">{isSearching ? t('搜索中...', 'Searching...') : t('AI搜索', 'AI Search')}</span>
+            </Button>
+            {isSearching && searchPhase && (
+              <span className="text-xs text-gray-400 dark:text-gray-500 animate-pulse whitespace-nowrap">
+                {searchPhase}
               </span>
-              <button
-                onClick={clearSearchHistory}
-                className="text-xs text-gray-500 dark:text-text-tertiary hover:text-gray-700 dark:text-text-secondary dark:hover:text-gray-700 dark:text-text-secondary transition-colors"
-              >
-                {t('清除', 'Clear')}
-              </button>
-            </div>
-            {searchHistory.map((historyQuery, index) => (
-              <button
-                key={index}
-                onClick={() => handleHistoryItemClick(historyQuery)}
-                className="w-full px-3 py-2 text-left text-sm text-gray-900 dark:text-text-secondary hover:bg-light-bg dark:hover:bg-white/10 transition-colors flex items-center space-x-2"
-              >
-                <Search className="w-4 h-4 text-gray-400 dark:text-text-quaternary" />
-                <span className="truncate">{historyQuery}</span>
-              </button>
-            ))}
+            )}
           </div>
-        )}
 
-        {/* Search Suggestions Dropdown */}
-        {showSuggestions && (
-          <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-slate-200/90 bg-white p-1.5 shadow-[0_20px_55px_rgba(15,23,42,0.18)] dark:border-white/[0.08] dark:bg-[#151e2f]">
-            <div className="p-2 border-b border-black/[0.04] dark:border-white/[0.04]">
-              <span className="text-sm font-medium text-gray-900 dark:text-text-secondary">
-                {t('搜索建议', 'Search Suggestions')}
-              </span>
-            </div>
-            {searchSuggestions
-              .filter(suggestion =>
-                suggestion.toLowerCase().includes(searchQuery.toLowerCase()) && 
-                suggestion.toLowerCase() !== searchQuery.toLowerCase()
-              )
-              .slice(0, 5)
-              .map((suggestion, index) => (
+          {/* Search History Dropdown */}
+          {showSearchHistory && searchHistory.length > 0 && (
+            <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-slate-200/90 bg-white p-1.5 shadow-[0_20px_55px_rgba(15,23,42,0.18)] dark:border-white/[0.08] dark:bg-[#151e2f]">
+              <div className="p-2 border-b border-black/[0.04] dark:border-white/[0.04] flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-900 dark:text-text-secondary">
+                  {t('搜索历史', 'Search History')}
+                </span>
+                <button
+                  onClick={clearSearchHistory}
+                  className="text-xs text-gray-500 dark:text-text-tertiary hover:text-gray-700 dark:text-text-secondary dark:hover:text-gray-700 dark:text-text-secondary transition-colors"
+                >
+                  {t('清除', 'Clear')}
+                </button>
+              </div>
+              {searchHistory.map((historyQuery, index) => (
                 <button
                   key={index}
-                  onClick={() => handleSuggestionClick(suggestion)}
+                  onClick={() => handleHistoryItemClick(historyQuery)}
                   className="w-full px-3 py-2 text-left text-sm text-gray-900 dark:text-text-secondary hover:bg-light-bg dark:hover:bg-white/10 transition-colors flex items-center space-x-2"
                 >
-                  <div className="w-4 h-4 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-gray-100 dark:bg-white/[0.04] rounded-full"></div>
-                  </div>
-                  <span className="truncate">{suggestion}</span>
+                  <Search className="w-4 h-4 text-gray-400 dark:text-text-quaternary" />
+                  <span className="truncate">{historyQuery}</span>
                 </button>
               ))}
-          </div>
-        )}
-        <div className="absolute right-2 top-1/2 flex max-w-[calc(100%-16px)] -translate-y-1/2 items-center space-x-1 sm:space-x-2">
-          {searchQuery && (
-            <button
-              onClick={handleClearSearch}
-              className="p-1.5 text-gray-400 dark:text-text-quaternary hover:text-gray-700 dark:text-text-secondary dark:hover:text-gray-300 transition-colors"
-              title={t('清除搜索', 'Clear search')}
-            >
-              <X className="w-4 h-4" />
-            </button>
+            </div>
           )}
-          <Button
-            onClick={handleAISearch}
-            disabled={isSearching}
-            class="h-9 px-3 py-2 text-xs sm:px-4"
-            title={activeAIConfig
-              ? t('使用配置的 AI 服务搜索并重排结果', 'Use the configured AI service to search and rerank results')
-              : t('使用本地排序规则搜索', 'Search with local ranking rules')}
-          >
-            <Bot className="w-4 h-4" />
-            <span className="hidden sm:inline">{isSearching ? t('搜索中...', 'Searching...') : t('AI搜索', 'AI Search')}</span>
-          </Button>
-          {isSearching && searchPhase && (
-            <span className="text-xs text-gray-400 dark:text-gray-500 animate-pulse whitespace-nowrap">
-              {searchPhase}
-            </span>
+
+          {/* Search Suggestions Dropdown */}
+          {showSuggestions && (
+            <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-slate-200/90 bg-white p-1.5 shadow-[0_20px_55px_rgba(15,23,42,0.18)] dark:border-white/[0.08] dark:bg-[#151e2f]">
+              <div className="p-2 border-b border-black/[0.04] dark:border-white/[0.04]">
+                <span className="text-sm font-medium text-gray-900 dark:text-text-secondary">
+                  {t('搜索建议', 'Search Suggestions')}
+                </span>
+              </div>
+              {searchSuggestions
+                .filter(suggestion =>
+                  suggestion.toLowerCase().includes(searchQuery.toLowerCase()) &&
+                  suggestion.toLowerCase() !== searchQuery.toLowerCase()
+                )
+                .slice(0, 5)
+                .map((suggestion, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="w-full px-3 py-2 text-left text-sm text-gray-900 dark:text-text-secondary hover:bg-light-bg dark:hover:bg-white/10 transition-colors flex items-center space-x-2"
+                  >
+                    <div className="w-4 h-4 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-gray-100 dark:bg-white/[0.04] rounded-full"></div>
+                    </div>
+                    <span className="truncate">{suggestion}</span>
+                  </button>
+                ))}
+            </div>
           )}
         </div>
       </div>

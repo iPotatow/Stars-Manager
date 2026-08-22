@@ -714,13 +714,13 @@ ${this.sanitizeForPrompt(readmeContent.substring(0, 2000))}
 要求：
 - summary：中文概述，说明仓库的主要功能和用途，不超过50字。
   禁止出现“我们被要求”“只输出JSON”“根据仓库信息”“summary/tags/platforms”等提示词复述。
-- tags：选择3-5个最相关的应用类型标签${customCategories && customCategories.length > 0 ? '，优先从上方可用应用分类中选择' : '，类似应用商店分类，如：开发工具、Web应用、数据库、AI/机器学习'}。标签保持简洁，不要创造无关同义词。${categoriesLine}${hintLine}
+- tags：选择3-5个最相关的应用类型标签${customCategories && customCategories.length > 0 ? '，优先从上方可用应用分类中选择' : '，类似应用商店分类，如：开发工具、Web应用、数据库、人工智能'}。标签保持简洁，不要创造无关同义词。${categoriesLine}${hintLine}
 - platforms：只能从 ["mac","windows","linux","ios","android","docker","web","cli"] 中选择；无法判断则为 []。
 
 输出格式：
 {
   "summary": "中文概述",
-  "tags": ["AI/机器学习", "开发工具", "Python"],
+  "tags": ["人工智能", "开发工具", "Python"],
   "platforms": ["web", "cli"]
 }
 

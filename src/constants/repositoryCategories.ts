@@ -40,7 +40,7 @@ export const defaultCategories: Category[] = [
   },
   {
     id: 'ai',
-    name: 'AI/机器学习',
+    name: '人工智能',
     icon: '🤖',
     keywords: ['ai工具', 'ai', 'ml', 'machine learning', 'deep learning', 'neural', 'llm', 'agent', 'rag'],
   },
@@ -75,18 +75,6 @@ export const defaultCategories: Category[] = [
     keywords: ['效率工具', 'productivity', 'note', 'todo', 'calendar', 'task', 'workflow', 'plugin', 'extension'],
   },
   {
-    id: 'education',
-    name: '教育学习',
-    icon: '📚',
-    keywords: ['教育学习', 'education', 'learning', 'tutorial', 'course', 'documentation', 'docs', 'guide', 'reference'],
-  },
-  {
-    id: 'social',
-    name: '社交网络',
-    icon: '👥',
-    keywords: ['社交网络', 'social', 'chat', 'messaging', 'communication', 'community'],
-  },
-  {
     id: 'analytics',
     name: '数据分析',
     icon: '📊',
@@ -100,14 +88,12 @@ const categoryTranslations: Record<string, string> = {
   '移动应用': 'Mobile Apps',
   '桌面应用': 'Desktop Apps',
   '数据库': 'Database',
-  'AI/机器学习': 'AI/Machine Learning',
+  '人工智能': 'Artificial Intelligence',
   '开发工具': 'Development Tools',
   '安全工具': 'Security Tools',
   '游戏': 'Games',
   '设计工具': 'Design Tools',
   '效率工具': 'Productivity Tools',
-  '教育学习': 'Education',
-  '社交网络': 'Social Network',
   '数据分析': 'Data Analytics',
 };
 
@@ -164,6 +150,10 @@ const legacyCategoryIdMap: Record<string, string> = {
   archive: 'productivity',
 };
 
+const removedDefaultCategoryIds = new Set(['education', 'social']);
+
+export const isRemovedCategoryId = (id: string): boolean => removedDefaultCategoryIds.has(id);
+
 const legacyCategoryTermMap: Record<string, string> = {
   'web-development': 'web',
   'mobile-development': 'mobile',
@@ -197,7 +187,7 @@ export const migrateCategoryId = (id: string): string => {
 };
 
 export const migrateCategoryIds = (ids: string[]): string[] => (
-  Array.from(new Set(ids.map(migrateCategoryId)))
+  Array.from(new Set(ids.map(migrateCategoryId).filter(id => !isRemovedCategoryId(id))))
 );
 
 const legacyCategoryNameMap: Record<string, string> = {
@@ -336,7 +326,8 @@ const categoryIdFromLegacyName = (name: string): string | undefined => {
 export const migrateCategoryName = (name: string | undefined): string | undefined => {
   if (name == null) return name;
   const categoryId = categoryIdFromLegacyName(name);
-  return categoryId ? categoryNameById(categoryId) : name;
+  if (!categoryId) return name;
+  return categoryNameById(categoryId);
 };
 
 export const migrateRepositoryCategory = <T extends { custom_category?: string | null }>(repository: T): T => {

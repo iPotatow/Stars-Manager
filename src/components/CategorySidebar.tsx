@@ -17,8 +17,6 @@ import {
   Gamepad2,
   Palette,
   Zap,
-  BookOpen,
-  Users,
   BarChart3,
 } from '@lucide/vue';
 import { Category, Repository } from '../types';
@@ -46,8 +44,6 @@ const CATEGORY_ICONS: Record<string, Vue.ComponentType<{ className?: string }>> 
   game: Gamepad2,
   design: Palette,
   productivity: Zap,
-  education: BookOpen,
-  social: Users,
   analytics: BarChart3,
 };
 

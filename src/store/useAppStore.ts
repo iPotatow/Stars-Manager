@@ -57,6 +57,7 @@ import {
   migrateCategoryIds,
   migrateCategoryName,
   migrateRepositoryCategory,
+  isRemovedCategoryId,
 } from '../constants/repositoryCategories';
 
 const AUTH_MIRROR_KEY = 'stars-manager-auth';
@@ -2037,7 +2038,10 @@ const vueAppStore = createPersistedVueStore<AppState & AppActions>(
             ? migrateCategoryIds(state.categoryOrder)
             : [];
           if (typeof state.selectedCategory === 'string') {
-            state.selectedCategory = migrateCategoryId(state.selectedCategory);
+            const migratedSelectedCategory = migrateCategoryId(state.selectedCategory);
+            state.selectedCategory = isRemovedCategoryId(migratedSelectedCategory)
+              ? 'all'
+              : migratedSelectedCategory;
           }
           const existingOverrides = state.defaultCategoryOverrides && typeof state.defaultCategoryOverrides === 'object'
             ? state.defaultCategoryOverrides
