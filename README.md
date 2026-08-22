@@ -1,94 +1,130 @@
 # Stars Manager
 
-> 用一个页面整理 GitHub Star。
+> 把 GitHub Star 变成一个可搜索、可整理、可持续同步的个人资料库。
 
 [English README](README_en.md) · [Cloudflare 部署说明](CLOUDFLARE.md)
 
-Stars Manager 是一个运行在 Cloudflare 上的 GitHub Star 管理台。React 页面、认证 API、GitHub 代理、AI 配置、D1 和 Vectorize 都由同一个 Worker 提供。登录后可以在浏览器中管理 Star、Gist、Release 和 Fork。
+Stars Manager 是一个运行在 Cloudflare 上的 GitHub Star 管理台。它把收藏的仓库、Gist、Release 和 Fork 放进同一个工作区，提供分类、筛选、批量编辑、AI 摘要和相似仓库搜索。
 
-界面默认使用中文，登录页可以切换 English。生产版本只运行在 Cloudflare Worker 上，不依赖 Electron、Express、Docker、本地后端或浏览器直连服务。
+项目面向希望长期维护自己 GitHub 收藏的人：浏览器只访问同源 Worker，数据保存在 D1，GitHub、AI 和翻译请求由 Worker 代理，敏感配置不会进入前端构建产物。
 
-## 功能总览
+## 能解决什么问题
+
+GitHub Star 很容易变成一个不断增长、难以回看的列表。Stars Manager 将收藏整理成几个可操作的工作流：
+
+- 用关键词、语言、Topic、平台、星标数和分析状态快速定位仓库。
+- 用固定分类、自定义标签和批量操作维护个人知识结构。
+- 查看 README、Release、Fork 上游状态和 GitHub Actions，不必在多个页面之间切换。
+- 让 AI 生成仓库摘要、标签和平台信息，并用 Vectorize 查找相似项目。
+- 通过同一套 Worker 运行时管理登录、数据同步、AI 配置和 MCP 读取接口。
+
+## 功能
 
 | 模块 | 能力 |
 | --- | --- |
-| **Stars 仓库** | 同步 Star；按关键词、语言、标签、平台、星标数和分析状态筛选；支持自定义分类、批量操作、README 预览、AI 摘要和相似仓库搜索 |
-| **Gist** | 查看、搜索、创建、编辑和删除 Gist；支持收藏、取消收藏和 AI 摘要 |
-| **Releases** | 订阅 Release；按未读状态、平台、架构和文件类型筛选；复制下载链接 |
-| **Trending / Discover** | 浏览趋势、热门发布、热门仓库、主题和搜索结果；支持时间、平台、语言、主题、排序和订阅 |
-| **Forks** | 查看 Fork 和上游状态；搜索、分页、标记已读、同步上游和运行 GitHub Actions |
-| **AI 与向量搜索** | 配置 OpenAI、Anthropic、Ollama 或兼容接口；批量分析仓库，并使用 Cloudflare Vectorize 做相似度搜索 |
-| **数据与集成** | 导出或导入脱敏数据快照；查看配置历史；通过只读 MCP（`POST /mcp`）读取数据 |
+| **Stars 仓库** | 同步 GitHub Star；搜索、筛选、排序、分类、批量编辑、README 预览、AI 摘要和相似仓库搜索 |
+| **Gist** | 查看、搜索、创建、编辑、删除、收藏和取消收藏 Gist；支持 AI 摘要 |
+| **Releases** | 订阅 Star 仓库的 Release；按未读状态、平台、架构和文件类型筛选；复制下载链接 |
+| **Trending / Discover** | 浏览趋势、热门发布、热门仓库、主题和仓库搜索结果；支持时间、语言、平台和订阅筛选 |
+| **Forks** | 查看 Fork、上游状态和未读变化；同步上游并运行 GitHub Actions |
+| **AI 与向量搜索** | 支持 OpenAI、Anthropic、Gemini、DeepSeek、Ollama 和 OpenAI-compatible 接口；使用 Cloudflare Vectorize 进行相似度搜索 |
+| **数据与集成** | 导入或导出脱敏数据快照、查看配置历史，并通过只读 MCP 读取工作区数据 |
 
-## 分类逻辑
+## 分类模型
 
-仓库使用一组固定的中文应用类型分类：Web 应用、移动应用、桌面应用、数据库、AI/机器学习、开发工具、安全工具、游戏、设计工具、效率工具、教育学习、社交网络和数据分析。每个分类配有可维护的关键词，用于匹配 GitHub Topics、仓库描述、编程语言和 README。
+侧栏默认使用八个应用类型分类：
 
-AI 分析会生成 3-5 个应用类型标签，平台信息（Web、CLI、macOS、Windows、Linux、iOS、Android、Docker）单独保存。用户手动锁定的分类与显式无分类状态不会被后续 AI 分析覆盖；固定分类可以编辑关键词，也可以添加自定义分类。
+| 分类 | 适合收纳 |
+| --- | --- |
+| 🤖 人工智能 | LLM、Agent、RAG、MCP 和 AI 应用 |
+| 💻 开发技术 | 前后端、框架、库、SDK 和数据库 |
+| 🛠️ 工具软件 | CLI、开发工具、效率软件和自动化 |
+| 🖥️ 运维部署 | Docker、服务器、云服务和自托管项目 |
+| 🔐 网络安全 | 网络、代理、安全和隐私项目 |
+| 🎨 设计资源 | UI、组件、图标和设计资源 |
+| 📚 学习资源 | 教程、Awesome 列表、书籍和知识库 |
+| 💡 创意收藏 | Demo、实验、原型、游戏和灵感项目 |
 
-## 产品边界
-
-当前版本的运行范围：
-
-- 一个 Worker 同时托管 SPA、`/api/*` 和 `/mcp`。
-- D1 保存仓库、Gist、Release、Fork、分类和配置；敏感配置在写入 D1 前使用 AES-GCM 加密。
-- 浏览器只访问同源 Worker；GitHub、AI 和翻译请求由 Worker 代理，并限制为明确配置的公网 HTTPS 上游。
-- `workers_dev` 已关闭，生产访问应使用 Cloudflare 自定义域名。
-- 不包含 Electron、Express、Docker、aria2、SSE MCP、网络隧道或纯前端备用后端；当前部署只支持本节所述的 Worker 运行方式。
+AI 分析会参考仓库描述、Topics 和 README 生成标签；语言、平台和主题仍然可以单独筛选。用户手动锁定的分类不会被后续分析覆盖。
 
 ## 架构
 
 ```text
 浏览器
   └─ Cloudflare Worker
-       ├─ Static Assets（React + Vite）
+       ├─ Static Assets（Vue 3 + Vite + TSX）
        ├─ /api/auth/*    工作区登录与 GitHub Token 配置
-       ├─ /api/*         仓库、Gist、Release、Fork、AI、数据 API
+       ├─ /api/*         仓库、Gist、Release、Fork、AI 和数据 API
        ├─ /mcp           只读 Streamable HTTP MCP
        ├─ D1             持久数据与加密设置
        └─ Vectorize      语义向量索引
 ```
 
+运行时边界是刻意收敛的：生产环境只支持 Cloudflare Worker，不包含 Electron、Express、Docker、本地后端、浏览器直连 GitHub、SSE MCP 或网络隧道。`workers_dev` 已关闭，生产入口应使用 Cloudflare 自定义域名。
+
 ## 登录与数据安全
 
-1. 访问自定义域名后，先使用 `ADMIN_USER` / `ADMIN_PASSWORD` 登录工作区。
-2. Worker 返回 `HttpOnly`、`Secure`、`SameSite=Strict` 会话 Cookie；登录接口启用失败次数限制。
-3. 登录成功后再提交 GitHub Personal Access Token。Worker 会先调用 GitHub 校验 Token，再使用 `ENCRYPTION_KEY`（未设置时回退到 `ADMIN_PASSWORD`）加密写入 D1。
-4. GitHub Token、AI Key、Embedding Key 和 MCP Token 不会写入前端构建产物；页面也不直接访问这些上游服务。
-5. 生产静态资源使用严格 CSP，脚本只允许同源资源；所有状态变更 API 还会校验同源请求。
+1. 使用 Cloudflare Variables & Secrets 中的 `ADMIN_USER` 和 `ADMIN_PASSWORD` 登录工作区。
+2. Worker 返回 `HttpOnly`、`Secure`、`SameSite=Strict` 会话 Cookie；登录接口使用 D1 持久化失败次数限制。
+3. 登录后提交 GitHub Personal Access Token。Worker 会先向 GitHub 验证 Token，再使用 `ENCRYPTION_KEY`（未设置时回退到 `ADMIN_PASSWORD`）以 AES-GCM 加密写入 D1。
+4. GitHub Token、AI Key、Embedding Key 和 MCP Token 不会写入前端构建产物；页面也不直接请求这些上游服务。
+5. 状态变更 API 会校验同源请求，生产静态资源使用严格 CSP。
 
 ## 快速开始
 
 ### 前置条件
 
 - Node.js 20.19 或更新版本
-- 一个已登录 Wrangler 的 Cloudflare 账号
-- Workers、D1、Vectorize 和一个自定义域名
-- 一个 GitHub Personal Access Token；按要使用的功能授予 `repo`、`user`、`gist` 等所需权限
+- 已登录 Wrangler 的 Cloudflare 账号
+- 一个 D1 数据库、一个 Vectorize 索引和一个自定义域名
+- 一个具备所需 GitHub 权限的 Personal Access Token
 
-### 首次准备资源
+### 本地开发
 
 ```bash
 npm install
+cp .dev.vars.example .dev.vars
+```
+
+在 `.dev.vars` 中填写本地登录配置：
+
+```dotenv
+ADMIN_USER=your-user
+ADMIN_PASSWORD=your-password
+ADMIN_SESSION_SECRET=replace-with-a-long-random-secret
+ENCRYPTION_KEY=optional-encryption-secret
+```
+
+启动同源 Worker：
+
+```bash
+npm run cf:dev
+```
+
+该命令会构建前端、应用本地 D1 migrations，并启动 Wrangler 开发服务器。`.dev.vars` 只用于本地开发，不要提交到仓库。
+
+### Cloudflare 资源与生产部署
+
+先创建或绑定 D1 和 Vectorize：
+
+```bash
 npx wrangler login
 npx wrangler d1 list
 npx wrangler vectorize create stars-manager --dimensions=1536 --metric=cosine
 ```
 
-从 D1 列表中选择目标数据库，并将其绑定信息写入 `wrangler.jsonc`。Vectorize 的维度必须与实际 Embedding 模型一致，`1536` 只是常见示例。
+将目标 D1 的绑定信息写入 [`wrangler.jsonc`](wrangler.jsonc)。Vectorize 的维度必须与实际 Embedding 模型一致，`1536` 只是常见示例。
 
-### 配置 Cloudflare Variables & Secrets
-
-在 Worker 的 Settings → Variables & Secrets 中配置：
+在 Cloudflare Worker 的 Variables & Secrets 中配置：
 
 | 名称 | 类型 | 用途 |
 | --- | --- | --- |
 | `ADMIN_USER` | Variable | 工作区登录用户名 |
-| `ADMIN_PASSWORD` | Secret | 工作区登录密码，也是未配置独立加密密钥时的回退密钥 |
+| `ADMIN_PASSWORD` | Secret | 工作区登录密码；未设置独立加密密钥时也是加密回退密钥 |
 | `ADMIN_SESSION_SECRET` | Secret | HMAC 会话签名密钥，建议使用独立高熵随机值 |
-| `ENCRYPTION_KEY` | Secret | 可选；D1 敏感数据的 AES-256-GCM 密钥 |
+| `ENCRYPTION_KEY` | Secret，可选 | D1 敏感数据的 AES-256-GCM 加密密钥 |
 
-也可以使用 Wrangler：
+也可以使用 Wrangler 设置 Secret：
 
 ```bash
 npx wrangler secret put ADMIN_PASSWORD
@@ -96,19 +132,7 @@ npx wrangler secret put ADMIN_SESSION_SECRET
 npx wrangler secret put ENCRYPTION_KEY
 ```
 
-`ENCRYPTION_KEY` 一旦用于写入数据就必须长期保存。更换或丢失它会导致已有 GitHub、AI、Embedding 和 MCP 密钥无法解密。
-
-### 本地开发
-
-```bash
-cp .dev.vars.example .dev.vars
-# 在 .dev.vars 中填写 ADMIN_USER、ADMIN_PASSWORD、ADMIN_SESSION_SECRET
-npm run cf:dev
-```
-
-`cf:dev` 会构建前端、应用本地 D1 migration 并启动同源 Worker。不要提交 `.dev.vars`。
-
-### 生产部署
+发布前执行：
 
 ```bash
 npm run cf:check
@@ -116,16 +140,19 @@ npm run cf:migrate:remote
 npm run cf:deploy
 ```
 
-发布时先确认变量和 Secret，再应用远程 migration，最后部署并检查自定义域名上的登录、健康检查和静态资源。`wrangler.jsonc` 中的 `workers_dev: false` 表示生产入口不是 `*.workers.dev` 地址。
+`ENCRYPTION_KEY` 一旦用于写入数据就必须长期保存。更换或丢失它会导致已有 GitHub、AI、Embedding 和 MCP 密钥无法解密。
 
 ## 常用命令
 
 ```bash
-npm run lint       # ESLint
-npm run test:run   # Vitest
-npm run build      # Vite 生产构建
-npm run cf:check   # Worker 类型、构建与 Wrangler dry-run
-npm run cf:deploy  # 构建并部署到 Cloudflare
+npm run dev          # 仅启动 Vite 前端开发服务器
+npm run cf:dev       # 构建并启动同源 Cloudflare Worker
+npm run test:run     # 运行 Vitest 测试
+npm run lint         # ESLint
+npm run typecheck    # 前端 TypeScript 检查
+npm run build        # Vite 生产构建
+npm run cf:check     # Worker 类型、构建与 Wrangler dry-run
+npm run cf:deploy    # 构建并部署到 Cloudflare
 ```
 
 ## MCP
@@ -136,13 +163,37 @@ npm run cf:deploy  # 构建并部署到 Cloudflare
 https://YOUR_DOMAIN/mcp
 ```
 
-当前只接受无状态 `POST /mcp` Streamable HTTP 请求，使用 `Authorization: Bearer <MCP_TOKEN>`。不提供 SSE、Electron 或本地进程端点。
+接口只接受无状态 `POST /mcp` Streamable HTTP 请求，并使用：
+
+```http
+Authorization: Bearer <MCP_TOKEN>
+```
+
+MCP 是只读集成，不提供 SSE、Electron 或本地进程端点。
+
+## 项目结构
+
+```text
+src/
+  App.tsx                 应用视图与主导航
+  components/             页面与交互组件
+  services/                GitHub、Worker、AI、同步和向量搜索服务
+  store/                   Vue 原生状态与 IndexedDB 持久化
+  constants/               默认分类与筛选配置
+worker/src/
+  index.ts                 Worker 入口、认证边界与路由分发
+  auth.ts                  登录、会话和 GitHub Token 配置
+  api.ts                   D1 数据 API
+  proxy.ts                 GitHub、AI 与翻译代理
+  vector.ts                Vectorize 操作
+migrations/                D1 schema migrations
+```
 
 ## 排错提示
 
-- **页面空白**：确认部署产物来自最新构建，并检查响应中的 `Content-Security-Policy`。生产 CSP 不允许 `data:` 脚本，Vite 已关闭 legacy chunk 生成。
-- **登录失败**：确认 `ADMIN_USER`、`ADMIN_PASSWORD` 已配置，并等待 Cloudflare Secret 更新生效。
-- **Token 无法保存**：确认 `ENCRYPTION_KEY` 或 `ADMIN_PASSWORD` 非空；若更换过加密密钥，旧数据需要使用原密钥解密。
+- **页面空白**：确认部署产物来自最新构建，并检查响应中的 `Content-Security-Policy`。
+- **登录失败**：确认 `ADMIN_USER`、`ADMIN_PASSWORD` 和会话密钥已配置，并等待 Secret 生效。
+- **Token 无法保存**：确认 `ENCRYPTION_KEY` 或 `ADMIN_PASSWORD` 非空；更换加密密钥后旧数据需要使用原密钥解密。
 - **向量检索报错**：确认 Vectorize 索引存在，且索引维度与 Embedding 模型一致。
 - **AI 请求失败**：确认上游是公网 HTTPS 地址；Worker 不访问 localhost、回环或私网地址。
 

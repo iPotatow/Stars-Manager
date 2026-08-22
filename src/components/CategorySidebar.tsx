@@ -89,7 +89,7 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
   // isMobile 初始值从 window.innerWidth 同步获取（SSR安全）
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === 'undefined') return false;
-    return window.innerWidth < 1280;
+    return window.innerWidth < 1300;
   });
   // 控制文字显示的状态：等侧栏展开动效完成后再显示文字
   const [showText, setShowText] = useState(!isSidebarCollapsed);
@@ -126,7 +126,8 @@ export const CategorySidebar: Vue.FC<CategorySidebarProps> = ({
   // 检测屏幕尺寸
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1280);
+      // Keep the runtime branch aligned with Tailwind's xl layout breakpoint.
+      setIsMobile(window.innerWidth < 1300);
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);

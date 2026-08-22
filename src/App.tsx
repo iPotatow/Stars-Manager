@@ -10,6 +10,8 @@ import { DiscoveryView } from './components/DiscoveryView';
 import { SettingsPanel } from './components/SettingsPanel';
 import { GistView } from './components/GistView';
 import { BackToTop } from './components/BackToTop';
+import { Activity, Cloud } from '@lucide/vue';
+import { Badge } from './components/ui/badge';
 import { useAppStore } from './store/useAppStore';
 import { logger } from './services/logger';
 import { backend } from './services/backendAdapter';
@@ -239,9 +241,10 @@ const App: Vue.FC = () => {
   // Show loading state while store is hydrating.
   if (!hasHydrated || !runtimeReady) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f5f5f7] text-[#6e6e73]">
-        <div className="text-xs font-semibold uppercase tracking-[0.08em]">
-          Loading...
+      <div className="flex min-h-screen items-center justify-center bg-[#edf3fa] text-[#6d7f93]">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em]">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-[#2774d9]" />
+          {language === 'zh' ? '正在准备工作台…' : 'Preparing workspace…'}
         </div>
       </div>
     );
@@ -252,28 +255,32 @@ const App: Vue.FC = () => {
   }
 
   return (
-      <div className="min-h-screen bg-[#f5f5f7] text-[#1d1d1f] lg:pl-[272px]">
+      <div className="min-h-screen bg-transparent text-[#22344a] lg:pl-[272px]">
       <Header />
-      <main className="mx-auto w-full max-w-[1720px] px-3 py-4 sm:px-5 sm:py-6 xl:px-8 xl:py-7">
-        <div className="mb-5 flex min-h-12 min-w-0 flex-wrap items-end justify-between gap-4 border-b border-black/[0.12] px-1 pb-4 sm:mb-7">
+      <main className="mx-auto w-full max-w-[1720px] px-3 py-4 sm:px-6 sm:py-6 xl:px-10 xl:py-8">
+        <div className="mb-5 flex min-h-12 min-w-0 flex-wrap items-end justify-between gap-4 border-b border-[#b9cbe0]/80 px-1 pb-5 sm:mb-7">
           <div className="min-w-0 flex-1">
-            <div className="text-[11px] font-semibold text-[#86868b]">{language === 'zh' ? '资料库 / 当前视图' : 'LIBRARY / CURRENT VIEW'}</div>
-            <h1 className="text-[1.75rem] font-bold leading-none tracking-[-0.035em] text-slate-950 sm:text-[2rem]">
+            <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8293a7]">
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-[#dcebf9] text-[#2774d9]"><Activity className="size-3" aria-hidden="true" /></span>
+              {language === 'zh' ? '资料库 / 当前视图' : 'LIBRARY / CURRENT VIEW'}
+            </div>
+            <h1 className="text-[1.85rem] font-bold leading-none tracking-[-0.045em] text-[#203247] sm:text-[2.15rem]">
               {language === 'zh' ? VIEW_LABELS[currentView].zh : VIEW_LABELS[currentView].en}
             </h1>
-              <p className="mt-2 text-xs font-medium text-[#6e6e73]">
+              <p className="mt-2 text-xs font-medium text-[#708196]">
               {currentView === 'repositories'
                 ? (language === 'zh' ? `${repositories.length} 个已收藏仓库` : `${repositories.length} starred repositories`)
                 : (language === 'zh' ? 'Stars / Index 工作区' : 'Stars / Index workspace')}
             </p>
           </div>
-          <div className="hidden max-w-full shrink-0 flex-wrap items-center gap-2 rounded-[10px] border border-black/[0.12] bg-white/[0.58] px-2.5 py-[9px] text-[11px] text-[#6e6e73] shadow-[0_1px_4px_rgba(0,0,0,.03)] sm:flex">
-            <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-[#34c759] shadow-[0_0_0_3px_rgba(52,199,89,.14)]" />
-            <span className="font-semibold">{language === 'zh' ? '同步状态' : 'SYNC STATUS'}</span>
-            {lastSync
+          <Badge variant="outline" class="hidden min-h-9 max-w-full shrink-0 items-center gap-2 rounded-xl border-[#b9cbe0] bg-white/55 px-3 text-[11px] font-semibold text-[#657990] shadow-sm sm:inline-flex">
+            <Cloud class="size-3.5 text-[#2774d9]" aria-hidden="true" />
+            <span>{language === 'zh' ? '同步状态' : 'SYNC STATUS'}</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#5a9b88]" aria-hidden="true" />
+            <span className="font-medium text-[#7d8d9e]">{lastSync
               ? (language === 'zh' ? `同步于 ${new Date(lastSync).toLocaleString()}` : `Synced ${new Date(lastSync).toLocaleString()}`)
-              : (language === 'zh' ? '等待首次同步' : 'Waiting for first sync')}
-          </div>
+              : (language === 'zh' ? '等待首次同步' : 'Waiting for first sync')}</span>
+          </Badge>
         </div>
         {currentViewContent}
       </main>

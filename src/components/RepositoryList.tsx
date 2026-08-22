@@ -5,6 +5,7 @@ import { SimilarViewBanner } from './SimilarViewBanner';
 import { BulkActionToolbar } from './BulkActionToolbar';
 import { BulkCategorizeModal } from './BulkCategorizeModal';
 import { BulkRestoreModal, RestoreConfig } from './BulkRestoreModal';
+import { RepositoryAnalytics } from './RepositoryAnalytics';
 
 import { Repository } from '../types';
 import { useAppStore, getAllCategories } from '../store/useAppStore';
@@ -1017,6 +1018,8 @@ export const RepositoryList: Vue.FC<RepositoryListProps> = ({
           language={language}
         />
       )}
+
+      <RepositoryAnalytics repositories={filteredRepositories} />
 
       {/* Controls Bar */}
       <Card class="flex min-w-0 flex-col gap-3 p-3 sm:flex-row sm:items-start sm:justify-between sm:p-3.5">
